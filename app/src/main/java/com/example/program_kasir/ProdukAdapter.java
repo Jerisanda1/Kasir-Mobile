@@ -1,0 +1,99 @@
+package com.example.program_kasir;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
+
+public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukViewHolder> {
+
+    public interface OnProdukClickListener {
+        void onProdukClick(Produk produk);
+    }
+
+    private List<Produk> daftarProduk;
+    private OnProdukClickListener listener;
+
+    public ProdukAdapter(List<Produk> daftarProduk, OnProdukClickListener listener) {
+        this.daftarProduk = daftarProduk;
+        this.listener = listener;
+    }
+
+    public void updateData(List<Produk> dataBaru) {
+        this.daftarProduk = dataBaru;
+        notifyDataSetChanged();
+    }
+
+    @NonNull
+    @Override
+    public ProdukViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_produk, parent, false);
+        return new ProdukViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ProdukViewHolder holder, int position) {
+        Produk produk = daftarProduk.get(position);
+        NumberFormat fmt = NumberFormat.getInstance(new Locale("id", "ID"));
+
+        holder.tvNamaProduk.setText(produk.getNama());
+        holder.tvHargaProduk.setText("Rp " + fmt.format(produk.getHarga()));
+
+        if (produk.getFotoUrl() != null && !produk.getFotoUrl().isEmpty()) {
+            holder.tvIconProduk.setVisibility(View.GONE);
+            holder.ivFotoProduk.setVisibility(View.VISIBLE);
+
+            Glide.with(holder.itemView.getContext())
+                    .load(produk.getFotoUrl())
+                    .transform(new CircleCrop())
+                    .placeholder(R.drawable.bg_icon_circle)
+                    .into(holder.ivFotoProduk);
+        } else {
+            holder.tvIconProduk.setVisibility(View.VISIBLE);
+            holder.ivFotoProduk.setVisibility(View.GONE);
+            holder.tvIconProduk.setText(produk.getIconEmoji());
+        }
+
+        // Cek status produk: kadaluarsa atau stok habis
+        if (produk.isTidakBisaDijual()) {
+            holder.tvBadgeStatus.setVisibility(View.VISIBLE);
+            holder.tvBadgeStatus.setText(produk.getLabelTidakBisaDijual());
+            holder.cardProduk.setAlpha(0.4f); // buram-kan card di baliknya
+            holder.itemView.setOnClickListener(null); // matikan klik, tidak bisa ditambah ke keranjang
+        } else {
+            holder.tvBadgeStatus.setVisibility(View.GONE);
+            holder.cardProduk.setAlpha(1f);
+            holder.itemView.setOnClickListener(v -> listener.onProdukClick(produk));
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return daftarProduk.size();
+    }
+
+    static class ProdukViewHolder extends RecyclerView.ViewHolder {
+        TextView tvIconProduk, tvNamaProduk, tvHargaProduk, tvBadgeStatus;
+        ImageView ivFotoProduk;
+        View cardProduk;
+
+        public ProdukViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvIconProduk  = itemView.findViewById(R.id.tvIconProduk);
+            tvNamaProduk  = itemView.findViewById(R.id.tvNamaProduk);
+            tvHargaProduk = itemView.findViewById(R.id.tvHargaProduk);
+            ivFotoProduk  = itemView.findViewById(R.id.ivFotoProduk);
+            tvBadgeStatus = itemView.findViewById(R.id.tvBadgeStatus);
+            cardProduk    = itemView.findViewById(R.id.cardProduk);
+        }
+    }
+}

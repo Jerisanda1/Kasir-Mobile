@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog_shift_ditolak"
+    android:padding="24dp">
+
+    <!-- Judul + ikon -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️"
+            android:textSize="20sp"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Akses Ditolak - Di Luar Jam Shift"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#C62828"/>
+    </LinearLayout>
+
+    <!-- Kotak detail shift, menyatu jadi satu warna -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_shift_info_box"
+        android:padding="16dp"
+        android:layout_marginBottom="14dp">
+
+        <TextView
+            android:id="@+id/tvShiftAnda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shift Anda: -"
+            android:textSize="13sp"
+            android:textColor="#C62828"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvWaktuSekarang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Waktu Sekarang: -"
+            android:textSize="13sp"
+            android:textColor="#C62828"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvTanggal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tanggal: -"
+            android:textSize="13sp"
+            android:textColor="#C62828"/>
+    </LinearLayout>
+
+    <!-- Catatan italic -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Silakan login sesuai dengan jam shift Anda."
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="#78909C"
+        android:layout_marginBottom="18dp"/>
+
+    <!-- Tombol Mengerti, rata kanan, menyatu tanpa garis pemisah -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/btnMengerti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MENGERTI"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#00897B"
+            android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground"/>
+    </LinearLayout>
+
+</LinearLayout>

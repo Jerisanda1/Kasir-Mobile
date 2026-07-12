@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
+
+    <LinearLayout
+        android:id="@+id/cardProduk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="10dp"
+        android:background="@drawable/edittext_rounded">
+
+        <!-- Ikon / foto produk -->
+        <FrameLayout
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="6dp">
+
+            <!-- Fallback emoji, tampil kalau foto tidak ada -->
+            <TextView
+                android:id="@+id/tvIconProduk"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@drawable/bg_icon_circle"
+                android:text="🛒"
+                android:textSize="24sp"/>
+
+            <!-- Foto asli produk dari server, tampil kalau foto_url ada -->
+            <ImageView
+                android:id="@+id/ivFotoProduk"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"/>
+        </FrameLayout>
+
+        <!-- Nama produk -->
+        <TextView
+            android:id="@+id/tvNamaProduk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Produk"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A2E"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+        <!-- Harga produk -->
+        <TextView
+            android:id="@+id/tvHargaProduk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rp 0"
+            android:textSize="11sp"
+            android:textColor="#78909C"/>
+
+    </LinearLayout>
+
+    <!-- Badge status (Kadaluarsa / Stok Habis), tampil mengambang di atas card -->
+    <TextView
+        android:id="@+id/tvBadgeStatus"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp"
+        android:background="@drawable/bg_tidakterjuall"
+        android:gravity="center"
+        android:text="STOK HABIS"
+        android:textColor="#FFFFFF"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+</FrameLayout>

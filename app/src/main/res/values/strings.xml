@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Program Kasir</string>
+
+    <string-array name="namabarang">
+        <item>-- Pilih Nama Barang --</item>
+        <item>Nabati</item>
+        <item>Sprite</item>
+        <item>Coca Cola</item>
+        <item>Qtela</item>
+        <item>Aqua</item>
+        <item>Fanta</item>
+    </string-array>
+</resources>

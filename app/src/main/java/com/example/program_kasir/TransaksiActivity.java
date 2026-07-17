@@ -10,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import android.view.View;
+import android.view.LayoutInflater;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -418,9 +420,8 @@ public class TransaksiActivity extends AppCompatActivity {
         }
     }
 
-    // DIUBAH TOTAL: sebelumnya cuma nampilin dialog, sekarang beneran kirim ke API
+    // DIUBAH: sekarang cuma validasi lalu tampilkan dialog konfirmasi dulu
     private void prosesBayar() {
-        // Validasi: keranjang tidak boleh kosong
         if (daftarKeranjang.isEmpty()) {
             Toast.makeText(this, "Keranjang masih kosong, pilih produk dahulu!",
                     Toast.LENGTH_SHORT).show();
@@ -436,7 +437,6 @@ public class TransaksiActivity extends AppCompatActivity {
 
         double jumlahBayar = Double.parseDouble(sJumlahBayar);
 
-        // Validasi: uang bayar tidak boleh kurang dari total
         if (jumlahBayar < totalBayar) {
             etJumlahBayar.setError("Jumlah bayar kurang dari total!");
             etJumlahBayar.requestFocus();
@@ -444,8 +444,61 @@ public class TransaksiActivity extends AppCompatActivity {
         }
 
         double kembalian = jumlahBayar - totalBayar;
+        tampilkanDialogKonfirmasi(jumlahBayar, kembalian);
+    }
 
-        // Susun cart untuk dikirim ke server
+    // BARU: dialog konfirmasi sebelum transaksi diproses ke server
+    private void tampilkanDialogKonfirmasi(double jumlahBayar, double kembalian) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_konfirmasi_transaksi, null);
+
+        TextView tvJudulDetailProduk = dialogView.findViewById(R.id.tvJudulDetailProduk);
+        LinearLayout llDaftarItem = dialogView.findViewById(R.id.llDaftarItemKonfirmasi);
+        TextView tvKonfirmasiTotal = dialogView.findViewById(R.id.tvKonfirmasiTotal);
+        TextView tvKonfirmasiBayar = dialogView.findViewById(R.id.tvKonfirmasiBayar);
+        TextView tvKonfirmasiKembali = dialogView.findViewById(R.id.tvKonfirmasiKembali);
+        Button btnProsesTransaksi = dialogView.findViewById(R.id.btnProsesTransaksi);
+        Button btnBatalKonfirmasi = dialogView.findViewById(R.id.btnBatalKonfirmasi);
+
+        tvJudulDetailProduk.setText("🛒 Detail Produk (" + daftarKeranjang.size() + " item)");
+        tvKonfirmasiTotal.setText(formatRupiah(totalBayar));
+        tvKonfirmasiBayar.setText(formatRupiah(jumlahBayar));
+        tvKonfirmasiKembali.setText(formatRupiah(kembalian));
+
+        NumberFormat fmt = NumberFormat.getInstance(new Locale("id", "ID"));
+        llDaftarItem.removeAllViews();
+        for (ItemKeranjang item : daftarKeranjang) {
+            View itemView = LayoutInflater.from(this).inflate(R.layout.item_konfirmasi_produk, llDaftarItem, false);
+            TextView tvNama = itemView.findViewById(R.id.tvNamaProdukKonfirmasi);
+            TextView tvQtyHarga = itemView.findViewById(R.id.tvQtyHargaKonfirmasi);
+            TextView tvSubtotalItem = itemView.findViewById(R.id.tvSubtotalProdukKonfirmasi);
+
+            tvNama.setText(item.getProduk().getNama());
+            tvQtyHarga.setText(item.getJumlah() + " x Rp " + fmt.format(item.getProduk().getHarga()));
+            tvSubtotalItem.setText("Rp " + fmt.format(item.getSubtotalItem()));
+            llDaftarItem.addView(itemView);
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(
+                    new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        btnProsesTransaksi.setOnClickListener(v -> {
+            dialog.dismiss();
+            kirimTransaksiKeServer(jumlahBayar, kembalian);
+        });
+        btnBatalKonfirmasi.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    // BARU: baru di sini transaksi beneran dikirim ke API, dipanggil setelah user tekan "Proses Transaksi"
+    private void kirimTransaksiKeServer(double jumlahBayar, double kembalian) {
         List<CartItem> cartItems = new ArrayList<>();
         for (ItemKeranjang item : daftarKeranjang) {
             cartItems.add(new CartItem(
@@ -468,7 +521,7 @@ public class TransaksiActivity extends AppCompatActivity {
                         btnBayar.setText("Bayar");
 
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            tampilkanStrukSukses(response.body().getKodeTransaksi(), jumlahBayar, kembalian);
+                            tampilkanDialogSukses(response.body().getKodeTransaksi());
                         } else {
                             String pesan = "Transaksi gagal diproses";
                             if (response.body() != null && response.body().getMessage() != null) {
@@ -493,33 +546,38 @@ public class TransaksiActivity extends AppCompatActivity {
                 });
     }
 
-    // BARU: dialog struk sukses, dipanggil setelah server konfirmasi transaksi tersimpan
-    private void tampilkanStrukSukses(String kodeTransaksi, double jumlahBayar, double kembalian) {
-        StringBuilder daftarBelanja = new StringBuilder();
-        for (ItemKeranjang item : daftarKeranjang) {
-            daftarBelanja.append(item.getProduk().getNama())
-                    .append(" x").append(item.getJumlah())
-                    .append(" = ").append(formatRupiah(item.getSubtotalItem()))
-                    .append("\n");
+    // BARU: dialog "Pembayaran Berhasil", cetak nota masih placeholder (tombol saja)
+    private void tampilkanDialogSukses(String kodeTransaksi) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_pembayaran_berhasil, null);
+
+        TextView tvKode = dialogView.findViewById(R.id.tvKodeTransaksiSukses);
+        Button btnCetakNota = dialogView.findViewById(R.id.btnCetakNota);
+        Button btnTransaksiBaru = dialogView.findViewById(R.id.btnTransaksiBaru);
+
+        tvKode.setText(kodeTransaksi);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(
+                    new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
-        String pesan = "No. Transaksi: " + kodeTransaksi + "\n\n"
-                + daftarBelanja.toString()
-                + "\nSubtotal : " + tvSubtotal.getText()
-                + "\nDiskon   : " + tvDiskon.getText()
-                + "\nTOTAL    : " + tvTotalBayar.getText()
-                + "\nDibayar  : " + formatRupiah(jumlahBayar)
-                + "\nKembalian: " + formatRupiah(kembalian);
+        // Placeholder dulu, logika cetak beneran nanti menyusul
+        btnCetakNota.setOnClickListener(v -> {
+            Toast.makeText(this, "next ya brokk", Toast.LENGTH_SHORT).show();
+        });
 
-        new AlertDialog.Builder(this)
-                .setTitle("Transaksi Berhasil!")
-                .setMessage(pesan)
-                .setPositiveButton("Transaksi Baru", (d, w) -> {
-                    resetForm();
-                    siapkanDataProduk(); // refresh stok terbaru dari server
-                })
-                .setCancelable(false)
-                .show();
+        btnTransaksiBaru.setOnClickListener(v -> {
+            dialog.dismiss();
+            resetForm();
+            siapkanDataProduk();
+        });
+
+        dialog.show();
     }
 
     private void resetForm() {

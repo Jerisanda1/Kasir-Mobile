@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvNamaProdukKonfirmasi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Nama Produk"
+            android:textSize="13sp"
+            android:textColor="#1A1A2E"/>
+
+        <TextView
+            android:id="@+id/tvSubtotalProdukKonfirmasi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rp 0"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#5149E5"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvQtyHargaKonfirmasi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1 x Rp 0"
+        android:textSize="11sp"
+        android:textColor="#78909C"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"
+        android:layout_marginTop="6dp"/>
+
+</LinearLayout>

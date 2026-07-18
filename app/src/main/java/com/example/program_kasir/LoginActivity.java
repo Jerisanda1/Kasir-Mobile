@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                             "Login berhasil! Selamat datang, " + body.getUser().getNamaLengkap(),
                             Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(LoginActivity.this, TransaksiActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 } else {

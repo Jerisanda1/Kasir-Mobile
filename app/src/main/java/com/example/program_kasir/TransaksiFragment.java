@@ -1,20 +1,27 @@
 package com.example.program_kasir;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import android.view.View;
-import android.view.LayoutInflater;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,14 +34,14 @@ import com.example.program_kasir.model.CartItem;
 import com.example.program_kasir.model.ProdukResponse;
 import com.example.program_kasir.model.TransaksiRequest;
 import com.example.program_kasir.model.TransaksiResponse;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import android.view.Gravity;
-import android.widget.LinearLayout;
 
-
-public class TransaksiActivity extends AppCompatActivity {
+// Halaman Transaksi (kasir jual barang). Sidebar & logout sekarang tinggal di MainActivity;
+// fragment ini cuma mengurus isi kolom kanan (produk, keranjang, pembayaran).
+public class TransaksiFragment extends Fragment {
 
     // Daftar lengkap produk yang dijual toko (diisi dari API)
     private final List<Produk> daftarProdukAsli = new ArrayList<>();
@@ -50,25 +57,30 @@ public class TransaksiActivity extends AppCompatActivity {
     private EditText etSearch, etDiskon, etJumlahBayar;
 
     private TextView tvSubtotal, tvDiskon, tvTotalBayar, tvKembalian, tvTanggal, tvKeranjangKosong;
-    private Button btnReset, btnBayar, ivLogout;
+    private Button btnReset, btnBayar;
     private TextView tvNamaKasir;
     private LinearLayout llKategori;
-    private LinearLayout llMenuRiwayat;
     private String kategoriDipilih = "Semua";
     private double totalBayar = 0;
 
-    // TAMBAHAN UNTUK API
     private SessionManager sessionManager;
     private ApiService apiService;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_transaksi);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                              @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_transaksi, container, false);
+    }
 
-        inisialisasiView();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        sessionManager = new SessionManager(this);
+        inisialisasiView(view);
+
+        Context ctx = requireContext();
+        sessionManager = new SessionManager(ctx);
         apiService = ApiClient.getClient().create(ApiService.class);
 
         tampilkanInfoKasir();
@@ -83,24 +95,22 @@ public class TransaksiActivity extends AppCompatActivity {
         hitungOtomatis();
     }
 
-    private void inisialisasiView() {
-        rvProduk          = findViewById(R.id.rvProduk);
-        rvKeranjang       = findViewById(R.id.rvKeranjang);
-        etSearch          = findViewById(R.id.etSearch);
-        etDiskon          = findViewById(R.id.etDiskon);
-        etJumlahBayar     = findViewById(R.id.etJumlahBayar);
-        tvSubtotal        = findViewById(R.id.tvSubtotal);
-        tvDiskon          = findViewById(R.id.tvDiskon);
-        tvTotalBayar      = findViewById(R.id.tvTotalBayar);
-        tvKembalian       = findViewById(R.id.tvKembalian);
-        tvTanggal         = findViewById(R.id.tvTanggal);
-        tvKeranjangKosong = findViewById(R.id.tvKeranjangKosong);
-        btnReset          = findViewById(R.id.btnReset);
-        btnBayar          = findViewById(R.id.btnBayar);
-        ivLogout          = findViewById(R.id.ivLogout);
-        tvNamaKasir       = findViewById(R.id.tvNamaKasir);
-        llKategori = findViewById(R.id.llKategori);
-        llMenuRiwayat = findViewById(R.id.llMenuRiwayat);
+    private void inisialisasiView(View v) {
+        rvProduk          = v.findViewById(R.id.rvProduk);
+        rvKeranjang       = v.findViewById(R.id.rvKeranjang);
+        etSearch          = v.findViewById(R.id.etSearch);
+        etDiskon          = v.findViewById(R.id.etDiskon);
+        etJumlahBayar     = v.findViewById(R.id.etJumlahBayar);
+        tvSubtotal        = v.findViewById(R.id.tvSubtotal);
+        tvDiskon          = v.findViewById(R.id.tvDiskon);
+        tvTotalBayar      = v.findViewById(R.id.tvTotalBayar);
+        tvKembalian       = v.findViewById(R.id.tvKembalian);
+        tvTanggal         = v.findViewById(R.id.tvTanggal);
+        tvKeranjangKosong = v.findViewById(R.id.tvKeranjangKosong);
+        btnReset          = v.findViewById(R.id.btnReset);
+        btnBayar          = v.findViewById(R.id.btnBayar);
+        tvNamaKasir       = v.findViewById(R.id.tvNamaKasir);
+        llKategori        = v.findViewById(R.id.llKategori);
     }
 
     // BARU: susun teks "Nama (Role - Shift jam)" di header
@@ -128,6 +138,7 @@ public class TransaksiActivity extends AppCompatActivity {
                 .enqueue(new Callback<ProdukResponse>() {
                     @Override
                     public void onResponse(Call<ProdukResponse> call, Response<ProdukResponse> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                             daftarProdukAsli.clear();
                             daftarProdukAsli.addAll(response.body().getData());
@@ -140,14 +151,15 @@ public class TransaksiActivity extends AppCompatActivity {
                             }
                             buatKategoriChips();
                         } else {
-                            Toast.makeText(TransaksiActivity.this,
+                            Toast.makeText(requireContext(),
                                     "Gagal mengambil data produk dari server", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ProdukResponse> call, Throwable t) {
-                        Toast.makeText(TransaksiActivity.this,
+                        if (!isAdded()) return;
+                        Toast.makeText(requireContext(),
                                 "Tidak bisa terhubung ke server: " + t.getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
@@ -156,12 +168,12 @@ public class TransaksiActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         // Grid produk 3 kolom
-        rvProduk.setLayoutManager(new GridLayoutManager(this, 3));
+        rvProduk.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         produkAdapter = new ProdukAdapter(daftarProdukTampil, this::tambahKeKeranjang);
         rvProduk.setAdapter(produkAdapter);
 
-        // List keranjang vertikal, dibatasi tinggi via XML (180dp) agar muncul scroll
-        rvKeranjang.setLayoutManager(new LinearLayoutManager(this));
+        // List keranjang vertikal, dibatasi tinggi via XML agar muncul scroll
+        rvKeranjang.setLayoutManager(new LinearLayoutManager(requireContext()));
         keranjangAdapter = new KeranjangAdapter(daftarKeranjang, new KeranjangAdapter.OnKeranjangActionListener() {
             @Override
             public void onTambahQty(int position) {
@@ -169,7 +181,7 @@ public class TransaksiActivity extends AppCompatActivity {
 
                 // Cegah qty melebihi stok yang tersedia
                 if (item.getJumlah() + 1 > item.getProduk().getStok()) {
-                    Toast.makeText(TransaksiActivity.this,
+                    Toast.makeText(requireContext(),
                             "Stok " + item.getProduk().getNama() + " tidak mencukupi (sisa "
                                     + item.getProduk().getStok() + ")", Toast.LENGTH_SHORT).show();
                     return;
@@ -219,9 +231,6 @@ public class TransaksiActivity extends AppCompatActivity {
 
         btnReset.setOnClickListener(v -> resetForm());
         btnBayar.setOnClickListener(v -> prosesBayar());
-        ivLogout.setOnClickListener(v -> konfirmasiLogout());
-        llMenuRiwayat.setOnClickListener(v ->
-                startActivity(new Intent(TransaksiActivity.this, RiwayatActivity.class)));
 
         // Hitung ulang otomatis setiap diskon diketik
         etDiskon.addTextChangedListener(new TextWatcher() {
@@ -267,7 +276,7 @@ public class TransaksiActivity extends AppCompatActivity {
 
         llKategori.removeAllViews();
         for (String kategori : kategoriList) {
-            TextView chip = new TextView(this);
+            TextView chip = new TextView(requireContext());
             chip.setText(kategori);
             chip.setTextSize(12);
             chip.setPadding(36, 16, 36, 16);
@@ -315,7 +324,7 @@ public class TransaksiActivity extends AppCompatActivity {
     // (lebih akurat, karena nama produk bisa saja mirip/duplikat)
     private void tambahKeKeranjang(Produk produk) {
         if (produk.isTidakBisaDijual()) {
-            Toast.makeText(this, produk.getNama() + " tidak bisa dijual ("
+            Toast.makeText(requireContext(), produk.getNama() + " tidak bisa dijual ("
                             + produk.getLabelTidakBisaDijual().toLowerCase() + ")",
                     Toast.LENGTH_SHORT).show();
             return;
@@ -326,7 +335,7 @@ public class TransaksiActivity extends AppCompatActivity {
             if (item.getProduk().getKodeProduk() == produk.getKodeProduk()) {
                 // Cegah qty melebihi stok yang tersedia
                 if (item.getJumlah() + 1 > produk.getStok()) {
-                    Toast.makeText(this, "Stok " + produk.getNama() + " tidak mencukupi (sisa "
+                    Toast.makeText(requireContext(), "Stok " + produk.getNama() + " tidak mencukupi (sisa "
                             + produk.getStok() + ")", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -340,7 +349,7 @@ public class TransaksiActivity extends AppCompatActivity {
 
         // Produk belum ada di keranjang, cek dulu stoknya minimal 1
         if (produk.getStok() < 1) {
-            Toast.makeText(this, "Stok " + produk.getNama() + " tidak mencukupi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Stok " + produk.getNama() + " tidak mencukupi", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -353,11 +362,11 @@ public class TransaksiActivity extends AppCompatActivity {
     // Menampilkan teks "Keranjang masih kosong" jika belum ada item
     private void cekKeranjangKosong() {
         if (daftarKeranjang.isEmpty()) {
-            tvKeranjangKosong.setVisibility(android.view.View.VISIBLE);
-            rvKeranjang.setVisibility(android.view.View.GONE);
+            tvKeranjangKosong.setVisibility(View.VISIBLE);
+            rvKeranjang.setVisibility(View.GONE);
         } else {
-            tvKeranjangKosong.setVisibility(android.view.View.GONE);
-            rvKeranjang.setVisibility(android.view.View.VISIBLE);
+            tvKeranjangKosong.setVisibility(View.GONE);
+            rvKeranjang.setVisibility(View.VISIBLE);
         }
     }
 
@@ -427,7 +436,7 @@ public class TransaksiActivity extends AppCompatActivity {
     // DIUBAH: sekarang cuma validasi lalu tampilkan dialog konfirmasi dulu
     private void prosesBayar() {
         if (daftarKeranjang.isEmpty()) {
-            Toast.makeText(this, "Keranjang masih kosong, pilih produk dahulu!",
+            Toast.makeText(requireContext(), "Keranjang masih kosong, pilih produk dahulu!",
                     Toast.LENGTH_SHORT).show();
             return;
         }
@@ -453,7 +462,8 @@ public class TransaksiActivity extends AppCompatActivity {
 
     // BARU: dialog konfirmasi sebelum transaksi diproses ke server
     private void tampilkanDialogKonfirmasi(double jumlahBayar, double kembalian) {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_konfirmasi_transaksi, null);
+        Context ctx = requireContext();
+        View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_konfirmasi_transaksi, null);
 
         TextView tvJudulDetailProduk = dialogView.findViewById(R.id.tvJudulDetailProduk);
         LinearLayout llDaftarItem = dialogView.findViewById(R.id.llDaftarItemKonfirmasi);
@@ -471,7 +481,7 @@ public class TransaksiActivity extends AppCompatActivity {
         NumberFormat fmt = NumberFormat.getInstance(new Locale("id", "ID"));
         llDaftarItem.removeAllViews();
         for (ItemKeranjang item : daftarKeranjang) {
-            View itemView = LayoutInflater.from(this).inflate(R.layout.item_konfirmasi_produk, llDaftarItem, false);
+            View itemView = LayoutInflater.from(ctx).inflate(R.layout.item_konfirmasi_produk, llDaftarItem, false);
             TextView tvNama = itemView.findViewById(R.id.tvNamaProdukKonfirmasi);
             TextView tvQtyHarga = itemView.findViewById(R.id.tvQtyHargaKonfirmasi);
             TextView tvSubtotalItem = itemView.findViewById(R.id.tvSubtotalProdukKonfirmasi);
@@ -482,7 +492,7 @@ public class TransaksiActivity extends AppCompatActivity {
             llDaftarItem.addView(itemView);
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(ctx)
                 .setView(dialogView)
                 .setCancelable(false)
                 .create();
@@ -521,6 +531,7 @@ public class TransaksiActivity extends AppCompatActivity {
                 .enqueue(new Callback<TransaksiResponse>() {
                     @Override
                     public void onResponse(Call<TransaksiResponse> call, Response<TransaksiResponse> response) {
+                        if (!isAdded()) return;
                         btnBayar.setEnabled(true);
                         btnBayar.setText("Bayar");
 
@@ -535,15 +546,16 @@ public class TransaksiActivity extends AppCompatActivity {
                                     pesan = response.errorBody().string();
                                 } catch (Exception ignored) {}
                             }
-                            Toast.makeText(TransaksiActivity.this, pesan, Toast.LENGTH_LONG).show();
+                            Toast.makeText(requireContext(), pesan, Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<TransaksiResponse> call, Throwable t) {
+                        if (!isAdded()) return;
                         btnBayar.setEnabled(true);
                         btnBayar.setText("Bayar");
-                        Toast.makeText(TransaksiActivity.this,
+                        Toast.makeText(requireContext(),
                                 "Gagal terhubung ke server: " + t.getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
@@ -552,7 +564,8 @@ public class TransaksiActivity extends AppCompatActivity {
 
     // BARU: dialog "Pembayaran Berhasil", cetak nota masih placeholder (tombol saja)
     private void tampilkanDialogSukses(String kodeTransaksi) {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_pembayaran_berhasil, null);
+        Context ctx = requireContext();
+        View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_pembayaran_berhasil, null);
 
         TextView tvKode = dialogView.findViewById(R.id.tvKodeTransaksiSukses);
         Button btnCetakNota = dialogView.findViewById(R.id.btnCetakNota);
@@ -560,7 +573,7 @@ public class TransaksiActivity extends AppCompatActivity {
 
         tvKode.setText(kodeTransaksi);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(ctx)
                 .setView(dialogView)
                 .setCancelable(false)
                 .create();
@@ -572,7 +585,7 @@ public class TransaksiActivity extends AppCompatActivity {
 
         // Placeholder dulu, logika cetak beneran nanti menyusul
         btnCetakNota.setOnClickListener(v -> {
-            Toast.makeText(this, "next ya brokk", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, "next ya brokk", Toast.LENGTH_SHORT).show();
         });
 
         btnTransaksiBaru.setOnClickListener(v -> {
@@ -595,22 +608,7 @@ public class TransaksiActivity extends AppCompatActivity {
 
         hitungOtomatis();
 
-        Toast.makeText(this, "Form berhasil direset", Toast.LENGTH_SHORT).show();
-    }
-
-    private void konfirmasiLogout() {
-        new AlertDialog.Builder(this)
-                .setTitle("Logout")
-                .setMessage("Apakah Anda yakin ingin keluar?")
-                .setPositiveButton("Ya, Keluar", (d, w) -> {
-                    sessionManager.clearSession();
-                    Intent intent = new Intent(TransaksiActivity.this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                })
-                .setNegativeButton("Batal", null)
-                .show();
+        Toast.makeText(requireContext(), "Form berhasil direset", Toast.LENGTH_SHORT).show();
     }
 
     private String formatRupiah(double angka) {

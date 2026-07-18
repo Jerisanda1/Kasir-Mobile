@@ -20,11 +20,7 @@
         </activity>
 
         <activity
-            android:name=".TransaksiActivity"
-            android:exported="false"/>
-
-        <activity
-            android:name=".RiwayatActivity"
+            android:name=".MainActivity"
             android:exported="false"/>
 
     </application>

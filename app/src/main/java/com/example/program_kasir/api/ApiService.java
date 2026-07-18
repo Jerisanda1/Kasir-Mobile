@@ -32,7 +32,8 @@ public interface ApiService {
     @GET("riwayat-transaksi")
     Call<RiwayatResponse> getRiwayat(@Header("Authorization") String token,
                                       @Query("search") String search,
-                                      @Query("date") String date);
+                                      @Query("date") String date,
+                                      @Query("bulan") String bulan);
 
     @GET("riwayat-transaksi/detail/{kode}")
     Call<DetailRiwayatResponse> getDetailRiwayat(@Header("Authorization") String token,

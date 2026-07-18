@@ -102,6 +102,10 @@ public class RiwayatFragment extends Fragment {
         tvInfoHalaman           = v.findViewById(R.id.tvInfoHalaman);
         btnPrevHalaman          = v.findViewById(R.id.btnPrevHalaman);
         btnNextHalaman          = v.findViewById(R.id.btnNextHalaman);
+
+        // Hint tanggal contoh selalu tanggal hari ini, bukan teks statis
+        SimpleDateFormat formatTampil = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        etTanggal.setHint(formatTampil.format(new Date()));
     }
 
     private void setupRecyclerView() {
@@ -183,9 +187,16 @@ public class RiwayatFragment extends Fragment {
 
         boolean tanpaFilter = (search == null || search.isEmpty()) && (tanggal == null || tanggal.isEmpty());
 
+        // Kalau user belum cari/filter apapun, minta server cuma kirim transaksi BULAN INI saja
+        // (jadi bukan ambil semua riwayat dari awal terus disaring di HP)
+        String bulanSekarang = tanpaFilter
+                ? new SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(new Date())
+                : null;
+
         apiService.getRiwayat(sessionManager.getBearerToken(),
                         (search == null || search.isEmpty()) ? null : search,
-                        tanggal)
+                        tanggal,
+                        bulanSekarang)
                 .enqueue(new Callback<RiwayatResponse>() {
                     @Override
                     public void onResponse(Call<RiwayatResponse> call, Response<RiwayatResponse> response) {
@@ -193,16 +204,8 @@ public class RiwayatFragment extends Fragment {
                         progressBar.setVisibility(View.GONE);
 
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            List<TransaksiRiwayat> hasilServer = response.body().getData();
-
                             daftarRiwayatSemua.clear();
-                            if (tanpaFilter) {
-                                // Tidak ada endpoint untuk filter per-bulan di server,
-                                // jadi default "bulan ini" disaring di HP dari seluruh riwayat.
-                                daftarRiwayatSemua.addAll(filterBulanIni(hasilServer));
-                            } else {
-                                daftarRiwayatSemua.addAll(hasilServer);
-                            }
+                            daftarRiwayatSemua.addAll(response.body().getData());
 
                             perbaruiSubjudul(tanpaFilter);
                             halamanSekarang = 1;
@@ -222,22 +225,6 @@ public class RiwayatFragment extends Fragment {
                                 Toast.LENGTH_LONG).show();
                     }
                 });
-    }
-
-    // Saring list dari server, hanya sisakan transaksi yang createdAt-nya di bulan berjalan.
-    // Format createdAt dari backend: "yyyy-MM-dd HH:mm:ss", jadi cukup bandingkan 7 karakter awal.
-    private List<TransaksiRiwayat> filterBulanIni(List<TransaksiRiwayat> semua) {
-        List<TransaksiRiwayat> hasil = new ArrayList<>();
-        if (semua == null) return hasil;
-
-        String bulanIni = new SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(new Date());
-        for (TransaksiRiwayat t : semua) {
-            String createdAt = t.getCreatedAt();
-            if (createdAt != null && createdAt.length() >= 7 && createdAt.substring(0, 7).equals(bulanIni)) {
-                hasil.add(t);
-            }
-        }
-        return hasil;
     }
 
     // Update teks kecil di header: kasih tahu user lagi lihat "bulan ini" atau hasil filter
@@ -290,38 +277,36 @@ public class RiwayatFragment extends Fragment {
                 // Buat tombol baru via programmatically
                 Button btnPage = new Button(requireContext());
 
-                // Mengatur ukuran tombol (kotak kecil)
+                // Mengatur ukuran tombol (bulat kecil, minimalis)
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        dpToPx(40) // Tinggi disamakan 40dp dengan tombol prev/next
+                        dpToPx(28),
+                        dpToPx(28)
                 );
                 params.setMargins(dpToPx(2), 0, dpToPx(2), 0); // Jarak antar angka 2dp
                 btnPage.setLayoutParams(params);
-                btnPage.setMinWidth(dpToPx(40)); // Menjaga agar tombol berbentuk kotak/proporsional
+                btnPage.setMinWidth(0);
+                btnPage.setMinHeight(0);
                 btnPage.setPadding(0, 0, 0, 0);
 
                 btnPage.setText(String.valueOf(nomorHalaman));
-                btnPage.setTextSize(12);
-                btnPage.setTypeface(null, android.graphics.Typeface.BOLD);
+                btnPage.setTextSize(11);
                 btnPage.setStateListAnimator(null); // Hilangkan shadow bawaan material button
-
-                // Buat shape rounded rectangle untuk tiap angka (Radius 8dp)
-                GradientDrawable bgShape = new GradientDrawable();
-                bgShape.setShape(GradientDrawable.RECTANGLE);
-                bgShape.setCornerRadius(dpToPx(8));
 
                 // Kondisi jika halaman ini SEDANG DIKUNJUNGI (Aktif)
                 if (nomorHalaman == halamanSekarang) {
-                    bgShape.setColor(android.graphics.Color.parseColor("#5149E5"));
+                    // Halaman aktif: bulat penuh warna ungu, teks putih tebal
+                    GradientDrawable bgAktif = new GradientDrawable();
+                    bgAktif.setShape(GradientDrawable.OVAL);
+                    bgAktif.setColor(android.graphics.Color.parseColor("#5149E5"));
+                    btnPage.setBackground(bgAktif);
                     btnPage.setTextColor(android.graphics.Color.WHITE);
+                    btnPage.setTypeface(null, android.graphics.Typeface.BOLD);
                 } else {
-                    // Halaman tidak aktif
-                    bgShape.setColor(android.graphics.Color.WHITE);
-                    btnPage.setTextColor(android.graphics.Color.parseColor("#1A1A2E"));
+                    // Halaman tidak aktif: tanpa background, cuma teks abu-abu
+                    btnPage.setBackground(null);
+                    btnPage.setTextColor(android.graphics.Color.parseColor("#78909C"));
+                    btnPage.setTypeface(null, android.graphics.Typeface.NORMAL);
                 }
-
-                // Terapkan background yang telah dibuat
-                btnPage.setBackground(bgShape);
 
                 // Klik nomor halaman
                 btnPage.setOnClickListener(v -> {

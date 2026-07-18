@@ -78,18 +78,20 @@
 
             <EditText
                 android:id="@+id/etTanggal"
-                android:layout_width="130dp"
+                android:layout_width="150dp"
                 android:layout_height="48dp"
-                android:hint="Tanggal"
                 android:focusable="false"
                 android:clickable="true"
                 android:paddingStart="14dp"
-                android:paddingEnd="14dp"
+                android:paddingEnd="10dp"
                 android:background="@drawable/edittext_rounded"
                 android:textSize="13sp"
                 android:textColor="#1A1A2E"
                 android:textColorHint="#B0BEC5"
-                android:layout_marginEnd="8dp"/>
+                android:layout_marginEnd="8dp"
+                android:gravity="center_vertical"
+                android:drawableEnd="@drawable/ic_calendar"
+                android:drawablePadding="6dp"/>
 
             <Button
                 android:id="@+id/btnReset"
@@ -102,7 +104,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="#1A1A2E"
-                android:backgroundTint="#F5F6FA"
+                android:background="@android:color/transparent"
                 android:stateListAnimator="@null"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -194,16 +196,15 @@
 
             <Button
                 android:id="@+id/btnPrevHalaman"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:minWidth="0dp"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:text="‹ Prev"
-                android:textSize="12sp"
+                android:padding="0dp"
+                android:text="‹"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#1A1A2E"
-                android:backgroundTint="#FFFFFF"
+                android:background="@android:color/transparent"
                 android:stateListAnimator="@null"/>
 
             <!-- Container dinamis untuk menampung nomor halaman (1 2 3 dst) -->
@@ -212,22 +213,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
                 android:gravity="center_vertical" />
 
             <Button
                 android:id="@+id/btnNextHalaman"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:minWidth="0dp"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:text="Next ›"
-                android:textSize="12sp"
+                android:padding="0dp"
+                android:text="›"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#1A1A2E"
-                android:backgroundTint="#FFFFFF"
+                android:background="@android:color/transparent"
                 android:stateListAnimator="@null"/>
         </LinearLayout>
     </LinearLayout>

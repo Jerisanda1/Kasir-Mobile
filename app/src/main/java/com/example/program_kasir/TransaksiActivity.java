@@ -53,6 +53,7 @@ public class TransaksiActivity extends AppCompatActivity {
     private Button btnReset, btnBayar, ivLogout;
     private TextView tvNamaKasir;
     private LinearLayout llKategori;
+    private LinearLayout llMenuRiwayat;
     private String kategoriDipilih = "Semua";
     private double totalBayar = 0;
 
@@ -99,6 +100,7 @@ public class TransaksiActivity extends AppCompatActivity {
         ivLogout          = findViewById(R.id.ivLogout);
         tvNamaKasir       = findViewById(R.id.tvNamaKasir);
         llKategori = findViewById(R.id.llKategori);
+        llMenuRiwayat = findViewById(R.id.llMenuRiwayat);
     }
 
     // BARU: susun teks "Nama (Role - Shift jam)" di header
@@ -218,6 +220,8 @@ public class TransaksiActivity extends AppCompatActivity {
         btnReset.setOnClickListener(v -> resetForm());
         btnBayar.setOnClickListener(v -> prosesBayar());
         ivLogout.setOnClickListener(v -> konfirmasiLogout());
+        llMenuRiwayat.setOnClickListener(v ->
+                startActivity(new Intent(TransaksiActivity.this, RiwayatActivity.class)));
 
         // Hitung ulang otomatis setiap diskon diketik
         etDiskon.addTextChangedListener(new TextWatcher() {

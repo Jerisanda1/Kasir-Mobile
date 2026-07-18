@@ -23,5 +23,9 @@
             android:name=".TransaksiActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".RiwayatActivity"
+            android:exported="false"/>
+
     </application>
 </manifest>

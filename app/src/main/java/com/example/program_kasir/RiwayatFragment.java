@@ -106,7 +106,17 @@ public class RiwayatFragment extends Fragment {
 
     private void setupRecyclerView() {
         rvRiwayat.setLayoutManager(new LinearLayoutManager(requireContext()));
-        riwayatAdapter = new RiwayatAdapter(daftarRiwayat, this::tampilkanDetail);
+        riwayatAdapter = new RiwayatAdapter(daftarRiwayat, new RiwayatAdapter.OnRiwayatActionListener() {
+            @Override
+            public void onDetailClick(TransaksiRiwayat item) {
+                tampilkanDetail(item);
+            }
+
+            @Override
+            public void onCetakClick(TransaksiRiwayat item) {
+                cetakNota(item);
+            }
+        });
         rvRiwayat.setAdapter(riwayatAdapter);
     }
 
@@ -323,6 +333,12 @@ public class RiwayatFragment extends Fragment {
                 llNomorHalamanContainer.addView(btnPage);
             }
         }
+    }
+
+    // TODO: cetak nota beneran menyusul setelah mekanisme print (printer/PDF) disepakati.
+    private void cetakNota(TransaksiRiwayat item) {
+        Toast.makeText(requireContext(),
+                "Cetak nota " + item.getKodeTransaksi() + " (menyusul)", Toast.LENGTH_SHORT).show();
     }
 
     // Ambil detail 1 transaksi dari API lalu tampilkan dalam dialog

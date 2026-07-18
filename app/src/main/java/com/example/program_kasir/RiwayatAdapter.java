@@ -16,6 +16,7 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.RiwayatV
 
     public interface OnRiwayatActionListener {
         void onDetailClick(TransaksiRiwayat item);
+        void onCetakClick(TransaksiRiwayat item);
     }
 
     private List<TransaksiRiwayat> daftarRiwayat;
@@ -52,6 +53,7 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.RiwayatV
         holder.tvWaktu.setText(formatWaktu(item.getCreatedAt()));
 
         holder.btnDetail.setOnClickListener(v -> listener.onDetailClick(item));
+        holder.btnCetak.setOnClickListener(v -> listener.onCetakClick(item));
     }
 
     private String formatWaktu(String createdAt) {
@@ -72,7 +74,7 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.RiwayatV
 
     static class RiwayatViewHolder extends RecyclerView.ViewHolder {
         TextView tvKodeTransaksi, tvTotal, tvWaktu, tvShift, tvBayarKembalian;
-        android.widget.Button btnDetail;
+        android.widget.Button btnDetail, btnCetak;
 
         public RiwayatViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -82,6 +84,7 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.RiwayatV
             tvShift           = itemView.findViewById(R.id.tvShift);
             tvBayarKembalian  = itemView.findViewById(R.id.tvBayarKembalian);
             btnDetail         = itemView.findViewById(R.id.btnDetail);
+            btnCetak          = itemView.findViewById(R.id.btnCetak);
         }
     }
 }

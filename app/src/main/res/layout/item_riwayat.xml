@@ -23,13 +23,6 @@
             android:layout_marginBottom="6dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🧾"
-                android:textSize="16sp"
-                android:layout_marginEnd="8dp"/>
-
-            <TextView
                 android:id="@+id/tvKodeTransaksi"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -88,7 +81,7 @@
             android:background="#E0E0E0"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Baris bawah: bayar & kembalian ringkas + tombol detail -->
+        <!-- Baris bawah: bayar & kembalian ringkas + tombol Print & Detail -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -105,6 +98,21 @@
                 android:textColor="#78909C"/>
 
             <Button
+                android:id="@+id/btnCetak"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:minWidth="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="Print"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_btn_riwayat_orange"
+                android:stateListAnimator="@null"/>
+
+            <Button
                 android:id="@+id/btnDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="34dp"
@@ -115,7 +123,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
-                android:backgroundTint="#5149E5"
+                android:background="@drawable/bg_btn_riwayat_primary"
                 android:stateListAnimator="@null"/>
         </LinearLayout>
 

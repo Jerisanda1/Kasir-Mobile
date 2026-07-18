@@ -8,10 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
     // Emulator Android Studio:
-    //public static final String BASE_URL = "http://10.0.2.2/casirku/api/";
+    public static final String BASE_URL = "http://10.0.2.2/casirku/api/";
 
     // HP fisik (uncomment baris di bawah & comment baris di atas kalau mau pindah):
-    public static final String BASE_URL = "http://192.168.1.7/casirku/api/";
+//    public static final String BASE_URL = "http://192.168.1.7/casirku/api/";
 
     private static Retrofit retrofit;
 

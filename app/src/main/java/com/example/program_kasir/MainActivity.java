@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout llMenuTransaksi, llMenuRiwayat;
     private TextView tvLabelTransaksi, tvLabelRiwayat;
+    private ImageView ivIconTransaksi, ivIconRiwayat;
     private View vIndikatorAktif;
     private Button btnLogout;
 
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
         llMenuTransaksi  = findViewById(R.id.llMenuTransaksi);
         llMenuRiwayat    = findViewById(R.id.llMenuRiwayat);
         tvLabelTransaksi = findViewById(R.id.tvLabelTransaksi);
+        ivIconTransaksi = findViewById(R.id.ivIconTransaksi);
+        ivIconRiwayat   = findViewById(R.id.ivIconRiwayat);
         tvLabelRiwayat   = findViewById(R.id.tvLabelRiwayat);
         vIndikatorAktif  = findViewById(R.id.vIndikatorAktif);
         btnLogout        = findViewById(R.id.ivLogout);
@@ -113,15 +117,26 @@ public class MainActivity extends AppCompatActivity {
         vIndikatorAktif.setLayoutParams(lp);
     }
 
-    // Ganti warna & ketebalan teks menu sesuai yang lagi aktif
     private void perbaruiLabelAktif(Menu target) {
+
         boolean transaksiAktif = target == Menu.TRANSAKSI;
+        boolean riwayatAktif = target == Menu.RIWAYAT;
 
-        tvLabelTransaksi.setTextColor(transaksiAktif ? 0xFFFFFFFF : 0xFF1A1A2E);
-        tvLabelTransaksi.setTypeface(null, transaksiAktif ? Typeface.BOLD : Typeface.NORMAL);
+        tvLabelTransaksi.setTextColor(
+                transaksiAktif ? 0xFFFFFFFF : 0xFF1A1A2E);
+        tvLabelTransaksi.setTypeface(
+                null, transaksiAktif ? Typeface.BOLD : Typeface.NORMAL);
 
-        tvLabelRiwayat.setTextColor(transaksiAktif ? 0xFF1A1A2E : 0xFFFFFFFF);
-        tvLabelRiwayat.setTypeface(null, transaksiAktif ? Typeface.NORMAL : Typeface.BOLD);
+        tvLabelRiwayat.setTextColor(
+                riwayatAktif ? 0xFFFFFFFF : 0xFF1A1A2E);
+        tvLabelRiwayat.setTypeface(
+                null, riwayatAktif ? Typeface.BOLD : Typeface.NORMAL);
+
+        ivIconTransaksi.setColorFilter(
+                transaksiAktif ? 0xFFFFFFFF : 0xFF1A1A2E);
+
+        ivIconRiwayat.setColorFilter(
+                riwayatAktif ? 0xFFFFFFFF : 0xFF1A1A2E);
     }
 
     private void konfirmasiLogout() {

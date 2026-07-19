@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -54,8 +54,7 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
 
             Glide.with(holder.itemView.getContext())
                     .load(produk.getFotoUrl())
-                    .transform(new CircleCrop())
-                    .placeholder(R.drawable.bg_icon_circle)
+                    .transform(new RoundedCorners(24))
                     .into(holder.ivFotoProduk);
         } else {
             holder.tvIconProduk.setVisibility(View.VISIBLE);
@@ -67,11 +66,9 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
         if (produk.isTidakBisaDijual()) {
             holder.tvBadgeStatus.setVisibility(View.VISIBLE);
             holder.tvBadgeStatus.setText(produk.getLabelTidakBisaDijual());
-            holder.cardProduk.setAlpha(0.4f); // buram-kan card di baliknya
-            holder.itemView.setOnClickListener(null); // matikan klik, tidak bisa ditambah ke keranjang
+            holder.itemView.setOnClickListener(null); // tetap matikan klik, walau tampilan tidak buram
         } else {
             holder.tvBadgeStatus.setVisibility(View.GONE);
-            holder.cardProduk.setAlpha(1f);
             holder.itemView.setOnClickListener(v -> listener.onProdukClick(produk));
         }
     }

@@ -1,5 +1,6 @@
 package com.example.program_kasir;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -16,6 +17,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -66,6 +69,31 @@ public class RiwayatFragment extends Fragment {
 
     private SessionManager sessionManager;
     private ApiService apiService;
+
+    // Menyimpan struk yang lagi nunggu izin Bluetooth diberikan, biar bisa lanjut cetak setelah izin di-ACC
+    private StrukData strukMenunggu;
+
+    private final ActivityResultLauncher<String> izinBluetoothLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), diizinkan -> {
+                if (diizinkan && strukMenunggu != null) {
+                    PrinterHelper.pilihPrinterDanCetak(requireContext(), strukMenunggu, printCallback);
+                } else if (!diizinkan) {
+                    Toast.makeText(requireContext(), "Izin Bluetooth diperlukan untuk cetak struk", Toast.LENGTH_SHORT).show();
+                }
+                strukMenunggu = null;
+            });
+
+    private final PrinterHelper.PrintCallback printCallback = new PrinterHelper.PrintCallback() {
+        @Override
+        public void onSukses() {
+            if (isAdded()) Toast.makeText(requireContext(), "Struk berhasil dicetak", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onGagal(String pesanError) {
+            if (isAdded()) Toast.makeText(requireContext(), "Gagal cetak: " + pesanError, Toast.LENGTH_LONG).show();
+        }
+    };
 
     @Nullable
     @Override
@@ -320,10 +348,80 @@ public class RiwayatFragment extends Fragment {
         }
     }
 
-    // TODO: cetak nota beneran menyusul setelah mekanisme print (printer/PDF) disepakati.
+    // Ambil detail transaksi dari API dulu (isi item belum ada di data list), baru dicetak
     private void cetakNota(TransaksiRiwayat item) {
-        Toast.makeText(requireContext(),
-                "Cetak nota " + item.getKodeTransaksi() + " (menyusul)", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Menyiapkan struk...", Toast.LENGTH_SHORT).show();
+
+        apiService.getDetailRiwayat(sessionManager.getBearerToken(), item.getKodeTransaksi())
+                .enqueue(new Callback<DetailRiwayatResponse>() {
+                    @Override
+                    public void onResponse(Call<DetailRiwayatResponse> call, Response<DetailRiwayatResponse> response) {
+                        if (!isAdded()) return;
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            StrukData data = bangunStrukData(response.body());
+                            mintaIzinLaluCetak(data);
+                        } else {
+                            Toast.makeText(requireContext(),
+                                    "Gagal mengambil detail transaksi untuk dicetak", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DetailRiwayatResponse> call, Throwable t) {
+                        if (!isAdded()) return;
+                        Toast.makeText(requireContext(),
+                                "Tidak bisa terhubung ke server: " + t.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    // Susun StrukData dari hasil API detail riwayat
+    private StrukData bangunStrukData(DetailRiwayatResponse detail) {
+        TransaksiRiwayat transaksi = detail.getData();
+
+        StrukData data = new StrukData();
+        data.kodeTransaksi = transaksi.getKodeTransaksi();
+        data.namaKasir = sessionManager.getNamaLengkap();
+        data.waktu = formatWaktuCetak(transaksi.getCreatedAt());
+        data.shift = transaksi.getShift();
+        data.total = transaksi.getTotal();
+        data.bayar = transaksi.getBayar();
+        data.kembalian = transaksi.getKembalian();
+
+        data.items = new ArrayList<>();
+        if (detail.getItems() != null) {
+            for (ItemDetailRiwayat itemProduk : detail.getItems()) {
+                data.items.add(new StrukItem(
+                        itemProduk.getNamaProduk(),
+                        itemProduk.getQty(),
+                        itemProduk.getHarga(),
+                        itemProduk.getSubtotal()
+                ));
+            }
+        }
+        return data;
+    }
+
+    private String formatWaktuCetak(String createdAt) {
+        if (createdAt == null) return "-";
+        try {
+            SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat output = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+            return output.format(input.parse(createdAt));
+        } catch (Exception e) {
+            return createdAt;
+        }
+    }
+
+    // Cek izin Bluetooth dulu sebelum benar-benar cetak; kalau belum ada, minta izin dulu
+    private void mintaIzinLaluCetak(StrukData data) {
+        if (PrinterHelper.izinBluetoothSudahAda(requireContext())) {
+            PrinterHelper.pilihPrinterDanCetak(requireContext(), data, printCallback);
+        } else {
+            strukMenunggu = data;
+            izinBluetoothLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT);
+        }
     }
 
     // Ambil detail 1 transaksi dari API lalu tampilkan dalam dialog

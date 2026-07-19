@@ -1,5 +1,6 @@
 package com.example.program_kasir;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -14,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -25,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,6 +57,31 @@ public class TransaksiFragment extends Fragment {
     private RecyclerView rvProduk, rvKeranjang;
     private ProdukAdapter produkAdapter;
     private KeranjangAdapter keranjangAdapter;
+
+    // Menyimpan struk yang lagi nunggu izin Bluetooth diberikan
+    private StrukData strukMenunggu;
+
+    private final ActivityResultLauncher<String> izinBluetoothLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), diizinkan -> {
+                if (diizinkan && strukMenunggu != null) {
+                    PrinterHelper.pilihPrinterDanCetak(requireContext(), strukMenunggu, printCallback);
+                } else if (!diizinkan) {
+                    Toast.makeText(requireContext(), "Izin Bluetooth diperlukan untuk cetak struk", Toast.LENGTH_SHORT).show();
+                }
+                strukMenunggu = null;
+            });
+
+    private final PrinterHelper.PrintCallback printCallback = new PrinterHelper.PrintCallback() {
+        @Override
+        public void onSukses() {
+            if (isAdded()) Toast.makeText(requireContext(), "Struk berhasil dicetak", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onGagal(String pesanError) {
+            if (isAdded()) Toast.makeText(requireContext(), "Gagal cetak: " + pesanError, Toast.LENGTH_LONG).show();
+        }
+    };
 
     private EditText etSearch, etDiskon, etJumlahBayar;
 
@@ -536,7 +565,7 @@ public class TransaksiFragment extends Fragment {
                         btnBayar.setText("Bayar");
 
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            tampilkanDialogSukses(response.body().getKodeTransaksi());
+                            tampilkanDialogSukses(response.body().getKodeTransaksi(), jumlahBayar, kembalian);
                         } else {
                             String pesan = "Transaksi gagal diproses";
                             if (response.body() != null && response.body().getMessage() != null) {
@@ -562,8 +591,8 @@ public class TransaksiFragment extends Fragment {
                 });
     }
 
-    // BARU: dialog "Pembayaran Berhasil", cetak nota masih placeholder (tombol saja)
-    private void tampilkanDialogSukses(String kodeTransaksi) {
+    // Dialog "Pembayaran Berhasil", sekarang tombol Cetak Nota beneran nyambung ke printer
+    private void tampilkanDialogSukses(String kodeTransaksi, double jumlahBayar, double kembalian) {
         Context ctx = requireContext();
         View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_pembayaran_berhasil, null);
 
@@ -572,6 +601,25 @@ public class TransaksiFragment extends Fragment {
         Button btnTransaksiBaru = dialogView.findViewById(R.id.btnTransaksiBaru);
 
         tvKode.setText(kodeTransaksi);
+
+        // Susun data struk dari keranjang yang masih ada di memori (belum di-reset)
+        StrukData data = new StrukData();
+        data.kodeTransaksi = kodeTransaksi;
+        data.namaKasir = sessionManager.getNamaLengkap();
+        data.waktu = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+        data.shift = sessionManager.getShift();
+        data.total = totalBayar;
+        data.bayar = jumlahBayar;
+        data.kembalian = kembalian;
+        data.items = new ArrayList<>();
+        for (ItemKeranjang item : daftarKeranjang) {
+            data.items.add(new StrukItem(
+                    item.getProduk().getNama(),
+                    item.getJumlah(),
+                    item.getProduk().getHarga(),
+                    item.getSubtotalItem()
+            ));
+        }
 
         AlertDialog dialog = new AlertDialog.Builder(ctx)
                 .setView(dialogView)
@@ -583,10 +631,7 @@ public class TransaksiFragment extends Fragment {
                     new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
-        // Placeholder dulu, logika cetak beneran nanti menyusul
-        btnCetakNota.setOnClickListener(v -> {
-            Toast.makeText(ctx, "next ya brokk", Toast.LENGTH_SHORT).show();
-        });
+        btnCetakNota.setOnClickListener(v -> mintaIzinLaluCetak(data));
 
         btnTransaksiBaru.setOnClickListener(v -> {
             dialog.dismiss();
@@ -595,6 +640,16 @@ public class TransaksiFragment extends Fragment {
         });
 
         dialog.show();
+    }
+
+    // Cek izin Bluetooth dulu sebelum benar-benar cetak; kalau belum ada, minta izin dulu
+    private void mintaIzinLaluCetak(StrukData data) {
+        if (PrinterHelper.izinBluetoothSudahAda(requireContext())) {
+            PrinterHelper.pilihPrinterDanCetak(requireContext(), data, printCallback);
+        } else {
+            strukMenunggu = data;
+            izinBluetoothLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT);
+        }
     }
 
     private void resetForm() {

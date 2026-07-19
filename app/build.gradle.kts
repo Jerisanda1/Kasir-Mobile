@@ -1,6 +1,18 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
 }
+
+// Baca API_BASE_URL dari local.properties (file ini beda-beda tiap laptop & TIDAK di-push ke GitHub).
+// Kalau belum diisi orang yang bersangkutan, default-nya pakai alamat emulator.
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+val apiBaseUrl: String = localProperties.getProperty("API_BASE_URL") ?: "http://10.0.2.2/casirku/api/"
 
 android {
     namespace = "com.example.program_kasir"
@@ -12,6 +24,12 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -41,5 +59,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    // Cetak struk ke printer thermal Bluetooth (protokol ESC/POS)
+    implementation("com.github.DantSu:ESCPOS-ThermalPrinter-Android:3.3.0")
 
 }

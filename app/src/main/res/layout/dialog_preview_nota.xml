@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxHeight="650dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_dialog_putih"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Preview Nota"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A2E"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cek dulu sebelum dikirim ke printer"
+            android:textSize="11sp"
+            android:textColor="#78909C"
+            android:gravity="center"
+            android:layout_marginBottom="14dp"/>
+
+        <!-- ==================== "KERTAS" STRUK ==================== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_kertas_nota"
+            android:padding="16dp"
+            android:layout_marginBottom="18dp">
+
+            <!-- Header toko -->
+            <TextView
+                android:id="@+id/tvPreviewNamaToko"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="JIMBO MART"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:textColor="#1A1A2E"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/tvPreviewAlamatToko"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Jl. Bukit Jimbaran No. 23"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#78909C"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/tvPreviewTeleponToko"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Telp: 0857-9235-8465"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#78909C"
+                android:gravity="center"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="--------------------------------"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#B0BEC5"
+                android:gravity="center"
+                android:maxLines="1"/>
+
+            <!-- Info transaksi -->
+            <TextView
+                android:id="@+id/tvPreviewNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No: -"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#1A1A2E"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvPreviewKasir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kasir: -"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#1A1A2E"/>
+
+            <TextView
+                android:id="@+id/tvPreviewTanggal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tanggal: -"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#1A1A2E"/>
+
+            <TextView
+                android:id="@+id/tvPreviewShift"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Shift: -"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#1A1A2E"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="--------------------------------"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#B0BEC5"
+                android:gravity="center"
+                android:maxLines="1"/>
+
+            <!-- Daftar item, diisi dari kode -->
+            <LinearLayout
+                android:id="@+id/llPreviewItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="--------------------------------"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#B0BEC5"
+                android:gravity="center"
+                android:maxLines="1"/>
+
+            <!-- Total / Bayar / Kembali -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Total"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    android:textColor="#1A1A2E"/>
+                <TextView
+                    android:id="@+id/tvPreviewTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp 0"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    android:textColor="#1A1A2E"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Bayar"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    android:textColor="#1A1A2E"/>
+                <TextView
+                    android:id="@+id/tvPreviewBayar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp 0"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    android:textColor="#1A1A2E"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Kembali"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    android:textColor="#1A1A2E"/>
+                <TextView
+                    android:id="@+id/tvPreviewKembali"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp 0"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    android:textColor="#1A1A2E"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="--------------------------------"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#B0BEC5"
+                android:gravity="center"
+                android:maxLines="1"/>
+
+            <!-- Footer -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Terima kasih atas kunjungannya"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:textColor="#78909C"
+                android:gravity="center"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="*** Barang yang sudah dibeli ***"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:textColor="#78909C"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="*** tidak dapat ditukar ***"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:textColor="#78909C"
+                android:gravity="center"/>
+        </LinearLayout>
+
+        <!-- Tombol aksi -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnPreviewCetak"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1.4"
+                android:layout_marginEnd="8dp"
+                android:text="🖨 Cetak Sekarang"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#5149E5"
+                android:stateListAnimator="@null"/>
+
+            <Button
+                android:id="@+id/btnPreviewTutup"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:text="Tutup"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#78909C"
+                android:stateListAnimator="@null"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

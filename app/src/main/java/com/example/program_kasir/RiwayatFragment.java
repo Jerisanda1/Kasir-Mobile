@@ -73,16 +73,6 @@ public class RiwayatFragment extends Fragment {
     // Menyimpan struk yang lagi nunggu izin Bluetooth diberikan, biar bisa lanjut cetak setelah izin di-ACC
     private StrukData strukMenunggu;
 
-    private final ActivityResultLauncher<String> izinBluetoothLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), diizinkan -> {
-                if (diizinkan && strukMenunggu != null) {
-                    PrinterHelper.pilihPrinterDanCetak(requireContext(), strukMenunggu, printCallback);
-                } else if (!diizinkan) {
-                    Toast.makeText(requireContext(), "Izin Bluetooth diperlukan untuk cetak struk", Toast.LENGTH_SHORT).show();
-                }
-                strukMenunggu = null;
-            });
-
     private final PrinterHelper.PrintCallback printCallback = new PrinterHelper.PrintCallback() {
         @Override
         public void onSukses() {
@@ -94,6 +84,16 @@ public class RiwayatFragment extends Fragment {
             if (isAdded()) Toast.makeText(requireContext(), "Gagal cetak: " + pesanError, Toast.LENGTH_LONG).show();
         }
     };
+
+    private final ActivityResultLauncher<String> izinBluetoothLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), diizinkan -> {
+                if (diizinkan && strukMenunggu != null) {
+                    PrinterHelper.pilihPrinterDanCetak(requireContext(), strukMenunggu, printCallback);
+                } else if (!diizinkan) {
+                    Toast.makeText(requireContext(), "Izin Bluetooth diperlukan untuk cetak struk", Toast.LENGTH_SHORT).show();
+                }
+                strukMenunggu = null;
+            });
 
     @Nullable
     @Override
@@ -359,7 +359,7 @@ public class RiwayatFragment extends Fragment {
                         if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                             StrukData data = bangunStrukData(response.body());
-                            mintaIzinLaluCetak(data);
+                            NotaPreviewHelper.tampilkan(requireContext(), data, () -> mintaIzinLaluCetak(data));
                         } else {
                             Toast.makeText(requireContext(),
                                     "Gagal mengambil detail transaksi untuk dicetak", Toast.LENGTH_SHORT).show();

@@ -61,16 +61,6 @@ public class TransaksiFragment extends Fragment {
     // Menyimpan struk yang lagi nunggu izin Bluetooth diberikan
     private StrukData strukMenunggu;
 
-    private final ActivityResultLauncher<String> izinBluetoothLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), diizinkan -> {
-                if (diizinkan && strukMenunggu != null) {
-                    PrinterHelper.pilihPrinterDanCetak(requireContext(), strukMenunggu, printCallback);
-                } else if (!diizinkan) {
-                    Toast.makeText(requireContext(), "Izin Bluetooth diperlukan untuk cetak struk", Toast.LENGTH_SHORT).show();
-                }
-                strukMenunggu = null;
-            });
-
     private final PrinterHelper.PrintCallback printCallback = new PrinterHelper.PrintCallback() {
         @Override
         public void onSukses() {
@@ -82,6 +72,16 @@ public class TransaksiFragment extends Fragment {
             if (isAdded()) Toast.makeText(requireContext(), "Gagal cetak: " + pesanError, Toast.LENGTH_LONG).show();
         }
     };
+
+    private final ActivityResultLauncher<String> izinBluetoothLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), diizinkan -> {
+                if (diizinkan && strukMenunggu != null) {
+                    PrinterHelper.pilihPrinterDanCetak(requireContext(), strukMenunggu, printCallback);
+                } else if (!diizinkan) {
+                    Toast.makeText(requireContext(), "Izin Bluetooth diperlukan untuk cetak struk", Toast.LENGTH_SHORT).show();
+                }
+                strukMenunggu = null;
+            });
 
     private EditText etSearch, etDiskon, etJumlahBayar;
 
@@ -631,7 +631,7 @@ public class TransaksiFragment extends Fragment {
                     new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
-        btnCetakNota.setOnClickListener(v -> mintaIzinLaluCetak(data));
+        btnCetakNota.setOnClickListener(v -> NotaPreviewHelper.tampilkan(ctx, data, () -> mintaIzinLaluCetak(data)));
 
         btnTransaksiBaru.setOnClickListener(v -> {
             dialog.dismiss();

@@ -66,59 +66,71 @@ public class PrinterHelper {
             return;
         }
 
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (adapter == null) {
-            callback.onGagal("Tablet ini tidak punya Bluetooth");
-            return;
-        }
-        if (!adapter.isEnabled()) {
-            callback.onGagal("Bluetooth tablet belum aktif, aktifkan dulu lalu coba lagi");
-            return;
-        }
+        // Semua pemanggilan API Bluetooth di bawah ini (isEnabled, getBondedDevices, getName)
+        // butuh izin BLUETOOTH_CONNECT di Android 12+. Sudah dicek lewat izinBluetoothSudahAda()
+        // di atas, tapi lint Android Studio tidak bisa "melacak" pengecekan lewat method terpisah
+        // seperti itu -- makanya tetap dibungkus try-catch(SecurityException) di sini sebagai
+        // jaring pengaman eksplisit (juga berguna kalau user mencabut izin tepat di tengah proses).
+        try {
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            if (adapter == null) {
+                callback.onGagal("Tablet ini tidak punya Bluetooth");
+                return;
+            }
+            if (!adapter.isEnabled()) {
+                callback.onGagal("Bluetooth tablet belum aktif, aktifkan dulu lalu coba lagi");
+                return;
+            }
 
-        Set<BluetoothDevice> perangkatTerpasang = adapter.getBondedDevices();
-        if (perangkatTerpasang.isEmpty()) {
-            callback.onGagal("Belum ada printer yang dipasangkan. Pasangkan dulu lewat Pengaturan > Bluetooth di tablet.");
-            return;
-        }
+            Set<BluetoothDevice> perangkatTerpasang = adapter.getBondedDevices();
+            if (perangkatTerpasang.isEmpty()) {
+                callback.onGagal("Belum ada printer yang dipasangkan. Pasangkan dulu lewat Pengaturan > Bluetooth di tablet.");
+                return;
+            }
 
-        SharedPreferences pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String macTersimpan = pref.getString(KEY_MAC_PRINTER, null);
+            SharedPreferences pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            String macTersimpan = pref.getString(KEY_MAC_PRINTER, null);
 
-        // Sudah pernah pilih printer sebelumnya & printer itu masih terpasang -> langsung cetak
-        if (macTersimpan != null) {
-            for (BluetoothDevice device : perangkatTerpasang) {
-                if (device.getAddress().equals(macTersimpan)) {
-                    cetakKePerangkat(device, data, callback);
-                    return;
+            // Sudah pernah pilih printer sebelumnya & printer itu masih terpasang -> langsung cetak
+            if (macTersimpan != null) {
+                for (BluetoothDevice device : perangkatTerpasang) {
+                    if (device.getAddress().equals(macTersimpan)) {
+                        cetakKePerangkat(device, data, callback);
+                        return;
+                    }
                 }
             }
-        }
 
-        // Cuma ada 1 perangkat terpasang -> anggap itu printernya, simpan sebagai default
-        if (perangkatTerpasang.size() == 1) {
-            BluetoothDevice satuSatunya = perangkatTerpasang.iterator().next();
-            pref.edit().putString(KEY_MAC_PRINTER, satuSatunya.getAddress()).apply();
-            cetakKePerangkat(satuSatunya, data, callback);
-            return;
-        }
+            // Cuma ada 1 perangkat terpasang -> anggap itu printernya, simpan sebagai default
+            if (perangkatTerpasang.size() == 1) {
+                BluetoothDevice satuSatunya = perangkatTerpasang.iterator().next();
+                pref.edit().putString(KEY_MAC_PRINTER, satuSatunya.getAddress()).apply();
+                cetakKePerangkat(satuSatunya, data, callback);
+                return;
+            }
 
-        // Ada beberapa perangkat -> biarkan kasir pilih sendiri mana yang printer
-        List<BluetoothDevice> daftarDevice = new ArrayList<>(perangkatTerpasang);
-        String[] namaDevice = new String[daftarDevice.size()];
-        for (int i = 0; i < daftarDevice.size(); i++) {
-            namaDevice[i] = daftarDevice.get(i).getName();
-        }
+            // Ada beberapa perangkat -> biarkan kasir pilih sendiri mana yang printer
+            List<BluetoothDevice> daftarDevice = new ArrayList<>(perangkatTerpasang);
+            String[] namaDevice = new String[daftarDevice.size()];
+            for (int i = 0; i < daftarDevice.size(); i++) {
+                String nama = daftarDevice.get(i).getName();
+                // getName() bisa null untuk beberapa perangkat BLE, jaga-jaga biar gak nampilin "null"
+                namaDevice[i] = (nama != null) ? nama : daftarDevice.get(i).getAddress();
+            }
 
-        new AlertDialog.Builder(context)
-                .setTitle("Pilih Printer")
-                .setItems(namaDevice, (dialog, which) -> {
-                    BluetoothDevice dipilih = daftarDevice.get(which);
-                    pref.edit().putString(KEY_MAC_PRINTER, dipilih.getAddress()).apply();
-                    cetakKePerangkat(dipilih, data, callback);
-                })
-                .setNegativeButton("Batal", null)
-                .show();
+            new AlertDialog.Builder(context)
+                    .setTitle("Pilih Printer")
+                    .setItems(namaDevice, (dialog, which) -> {
+                        BluetoothDevice dipilih = daftarDevice.get(which);
+                        pref.edit().putString(KEY_MAC_PRINTER, dipilih.getAddress()).apply();
+                        cetakKePerangkat(dipilih, data, callback);
+                    })
+                    .setNegativeButton("Batal", null)
+                    .show();
+
+        } catch (SecurityException e) {
+            callback.onGagal("Izin Bluetooth ditolak sistem, coba beri izin ulang lewat Pengaturan aplikasi");
+        }
     }
 
     // Kalau nanti mau ganti ke printer lain (bukan yang biasa dipakai), panggil ini dulu

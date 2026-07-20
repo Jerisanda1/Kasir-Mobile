@@ -9,6 +9,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -84,7 +86,7 @@ public class TransaksiFragment extends Fragment {
             });
 
     private EditText etSearch, etDiskon, etJumlahBayar;
-
+    private EditText etScanBarcode;
     private TextView tvSubtotal, tvDiskon, tvTotalBayar, tvKembalian, tvTanggal, tvKeranjangKosong;
     private Button btnReset, btnBayar;
     private TextView tvNamaKasir;
@@ -116,6 +118,7 @@ public class TransaksiFragment extends Fragment {
         siapkanDataProduk();
         setupRecyclerView();
         setupListener();
+        setupScanBarcode(); // BARU
 
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
         tvTanggal.setText(sdf.format(new java.util.Date()));
@@ -140,6 +143,7 @@ public class TransaksiFragment extends Fragment {
         btnBayar          = v.findViewById(R.id.btnBayar);
         tvNamaKasir       = v.findViewById(R.id.tvNamaKasir);
         llKategori        = v.findViewById(R.id.llKategori);
+        etScanBarcode      = v.findViewById(R.id.etScanBarcode);
     }
 
     // BARU: susun teks "Nama (Role - Shift jam)" di header
@@ -279,6 +283,42 @@ public class TransaksiFragment extends Fragment {
             }
             @Override public void afterTextChanged(Editable s) {}
         });
+    }
+    private void setupScanBarcode() {
+        etScanBarcode.setOnEditorActionListener((v, actionId, event) -> {
+            // Terpicu kalau tombol "Done"/Enter ditekan (baik dari scanner atau keyboard manual)
+            if (actionId == EditorInfo.IME_ACTION_DONE
+                    || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+
+                String barcodeInput = etScanBarcode.getText().toString().trim();
+                prosesBarcodeScan(barcodeInput);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void prosesBarcodeScan(String barcode) {
+        if (barcode.isEmpty()) return;
+
+        Produk produkDitemukan = null;
+        for (Produk p : daftarProdukAsli) {
+            if (barcode.equals(p.getBarcode())) {
+                produkDitemukan = p;
+                break;
+            }
+        }
+
+        if (produkDitemukan != null) {
+            tambahKeKeranjang(produkDitemukan); // fungsi yang sudah ada, otomatis cek stok/expired juga
+            Toast.makeText(requireContext(), "✓ " + produkDitemukan.getNama() + " ditambahkan", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(requireContext(), "Barcode tidak ditemukan: " + barcode, Toast.LENGTH_SHORT).show();
+        }
+
+        // Bersihkan field, siapkan buat scan barang berikutnya
+        etScanBarcode.setText("");
+        etScanBarcode.requestFocus();
     }
 
     // Menyaring daftar produk berdasarkan kata kunci pencarian

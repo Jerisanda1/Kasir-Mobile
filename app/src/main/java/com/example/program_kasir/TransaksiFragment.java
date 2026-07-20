@@ -1,6 +1,5 @@
 package com.example.program_kasir;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -75,12 +74,15 @@ public class TransaksiFragment extends Fragment {
         }
     };
 
-    private final ActivityResultLauncher<String> izinBluetoothLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), diizinkan -> {
-                if (diizinkan && strukMenunggu != null) {
+    // Minta BLUETOOTH_CONNECT & BLUETOOTH_SCAN sekaligus (bukan cuma BLUETOOTH_CONNECT).
+    // Keduanya wajib di Android 12+ -- lihat catatan di PrinterHelper.izinBluetoothSudahAda().
+    private final ActivityResultLauncher<String[]> izinBluetoothLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(), hasilIzin -> {
+                boolean semuaDiizinkan = !hasilIzin.containsValue(false);
+                if (semuaDiizinkan && strukMenunggu != null) {
                     PrinterHelper.pilihPrinterDanCetak(requireContext(), strukMenunggu, printCallback);
-                } else if (!diizinkan) {
-                    Toast.makeText(requireContext(), "Izin Bluetooth diperlukan untuk cetak struk", Toast.LENGTH_SHORT).show();
+                } else if (!semuaDiizinkan) {
+                    Toast.makeText(requireContext(), "Izin Bluetooth (Connect & Scan) diperlukan untuk cetak struk", Toast.LENGTH_SHORT).show();
                 }
                 strukMenunggu = null;
             });
@@ -688,7 +690,7 @@ public class TransaksiFragment extends Fragment {
             PrinterHelper.pilihPrinterDanCetak(requireContext(), data, printCallback);
         } else {
             strukMenunggu = data;
-            izinBluetoothLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT);
+            izinBluetoothLauncher.launch(PrinterHelper.daftarIzinBluetoothPerluDiminta());
         }
     }
 

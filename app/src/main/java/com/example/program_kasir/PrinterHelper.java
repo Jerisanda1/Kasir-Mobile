@@ -50,12 +50,32 @@ public class PrinterHelper {
 
     // Android 12 (API 31) ke atas WAJIB izin runtime BLUETOOTH_CONNECT sebelum baca daftar
     // perangkat Bluetooth atau konek ke printer. Di bawah itu, cukup izin di Manifest saja.
+    //
+    // CATATAN PENTING: BLUETOOTH_SCAN juga wajib dicek di sini, BUKAN cuma BLUETOOTH_CONNECT.
+    // Library EscPosPrinter (DantSu) memanggil BluetoothAdapter.cancelDiscovery() di dalam
+    // BluetoothConnection.connect(), dan method itu butuh izin BLUETOOTH_SCAN sendiri di
+    // Android 12+. Kalau cuma BLUETOOTH_CONNECT yang dicek/diminta (seperti sebelumnya),
+    // proses cetak akan selalu gagal dengan SecurityException begitu masuk ke connect(),
+    // meskipun BLUETOOTH_CONNECT sudah diizinkan user.
     public static boolean izinBluetoothSudahAda(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            return ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
+            boolean adaConnect = ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
                     == PackageManager.PERMISSION_GRANTED;
+            boolean adaScan = ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN)
+                    == PackageManager.PERMISSION_GRANTED;
+            return adaConnect && adaScan;
         }
         return true;
+    }
+
+    // Daftar izin yang perlu diminta ke user (dipakai oleh Activity/Fragment saat
+    // menampilkan permission launcher). Di bawah Android 12, array ini tidak dipakai
+    // karena cukup izin di Manifest saja (lihat izinBluetoothSudahAda()).
+    public static String[] daftarIzinBluetoothPerluDiminta() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return new String[]{Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN};
+        }
+        return new String[0];
     }
 
     // Titik masuk utama: cari printer yang sudah dipasangkan (paired) di tablet, lalu cetak ke situ.
@@ -177,7 +197,10 @@ public class PrinterHelper {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("[C]<b>\uD83D\uDED2 ").append(NAMA_TOKO).append("</b>\n");
+        // CATATAN: sengaja TIDAK pakai emoji (mis. 🛒) di sini. Printer thermal ESC/POS
+        // pakai charset satu-byte (bukan UTF-8), jadi emoji akan tercetak jadi karakter
+        // aneh/kotak, bukan gambar troli seperti yang mungkin dibayangkan.
+        sb.append("[C]<b>").append(NAMA_TOKO).append("</b>\n");
         sb.append("[C]").append(ALAMAT_TOKO).append("\n");
         sb.append("[C]").append(TELEPON_TOKO).append("\n");
         sb.append("[C]").append(garis).append("\n");

@@ -6,6 +6,14 @@
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- WAJIB juga di Android 12+: library printer (DantSu ESCPOS) memanggil
+         BluetoothAdapter.cancelDiscovery() secara internal sebelum connect(),
+         dan method itu butuh BLUETOOTH_SCAN terpisah dari BLUETOOTH_CONNECT.
+         Pakai "neverForLocation" karena aplikasi ini TIDAK melakukan scan/discovery
+         perangkat baru (cuma baca daftar yang sudah paired), jadi tidak butuh
+         izin lokasi sama sekali. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
     <application
         android:usesCleartextTraffic="true"
         android:allowBackup="true"

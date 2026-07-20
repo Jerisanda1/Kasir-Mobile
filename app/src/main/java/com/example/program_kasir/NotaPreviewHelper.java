@@ -79,5 +79,14 @@ public class NotaPreviewHelper {
         btnTutup.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+
+        // Batasi lebar dialog secara eksplisit SETELAH show() (resize window cuma efektif
+        // kalau window-nya sudah tampil). Default AlertDialog di tablet cenderung melebar
+        // penuh mengikuti layar, padahal isinya cuma kertas nota yang sempit.
+        if (dialog.getWindow() != null) {
+            float density = ctx.getResources().getDisplayMetrics().density;
+            int lebarPx = Math.round(380 * density);
+            dialog.getWindow().setLayout(lebarPx, android.view.WindowManager.LayoutParams.WRAP_CONTENT);
+        }
     }
 }

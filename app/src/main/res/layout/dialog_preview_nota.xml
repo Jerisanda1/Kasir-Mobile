@@ -30,21 +30,31 @@
             android:gravity="center"
             android:layout_marginBottom="14dp"/>
 
-        <!-- ==================== "KERTAS" STRUK ==================== -->
+        <!-- ==================== BACKDROP NETRAL (biar kertas putihnya kelihatan jelas sebagai objek terpisah) ==================== -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_kertas_nota"
+            android:gravity="center_horizontal"
+            android:background="@drawable/bg_info_note"
             android:padding="16dp"
             android:layout_marginBottom="18dp">
+
+        <!-- ==================== "KERTAS" STRUK — lebar sengaja dibatasi sempit (270dp),
+             niru proporsi kertas thermal 58mm asli (sempit & memanjang), bukan lebar penuh dialog ==================== -->
+        <LinearLayout
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_kertas_nota"
+            android:padding="14dp">
 
             <!-- Header toko -->
             <TextView
                 android:id="@+id/tvPreviewNamaToko"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="JIMBO MART"
+                android:text="🛒 JIMBO MART"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:fontFamily="monospace"
@@ -119,25 +129,14 @@
                 android:textSize="11sp"
                 android:fontFamily="monospace"
                 android:textColor="#1A1A2E"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginBottom="10dp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="--------------------------------"
-                android:textSize="11sp"
-                android:fontFamily="monospace"
-                android:textColor="#B0BEC5"
-                android:gravity="center"
-                android:maxLines="1"/>
-
-            <!-- Daftar item, diisi dari kode -->
+            <!-- Daftar item, diisi dari kode. Sengaja TANPA garis pemisah di atasnya (niru web) -->
             <LinearLayout
                 android:id="@+id/llPreviewItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="4dp"/>
+                android:orientation="vertical"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -245,20 +244,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="*** Barang yang sudah dibeli ***"
+                android:text="*** Barang yang sudah dibeli tidak dapat ditukar ***"
                 android:textSize="10sp"
                 android:fontFamily="monospace"
                 android:textColor="#78909C"
                 android:gravity="center"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="*** tidak dapat ditukar ***"
-                android:textSize="10sp"
-                android:fontFamily="monospace"
-                android:textColor="#78909C"
-                android:gravity="center"/>
+        </LinearLayout>
         </LinearLayout>
 
         <!-- Tombol aksi -->

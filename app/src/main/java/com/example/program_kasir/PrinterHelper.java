@@ -165,15 +165,19 @@ public class PrinterHelper {
 
     // Susun teks struk pakai format markup dari library:
     // [L]/[C]/[R] = rata kiri/tengah/kanan, <b>...</b> = tebal.
-    // Desainnya niru urutan di print_nota.php: header toko -> info transaksi -> daftar item -> total -> footer.
+    // Desainnya niru PERSIS print_nota.php: header toko -> garis tebal -> info transaksi ->
+    // (jarak kosong, TANPA garis) -> daftar item (dipisah garis TIPIS per item, niru border
+    // dashed #eee di tiap <tr>) -> garis tebal -> total -> garis tebal -> footer.
     private static String bangunTeksStruk(StrukData data) {
         NumberFormat fmt = NumberFormat.getInstance(new Locale("id", "ID"));
-        // 32 strip, pas 1 baris penuh di printer 58mm (32 karakter/baris)
+        // Garis tebal (untuk batas antar section, niru border dashed #000 di web)
         String garis = "--------------------------------";
+        // Garis tipis (untuk pemisah antar item, niru border dashed #eee di web)
+        String garisTipis = "................................";
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("[C]<b>").append(NAMA_TOKO).append("</b>\n");
+        sb.append("[C]<b>\uD83D\uDED2 ").append(NAMA_TOKO).append("</b>\n");
         sb.append("[C]").append(ALAMAT_TOKO).append("\n");
         sb.append("[C]").append(TELEPON_TOKO).append("\n");
         sb.append("[C]").append(garis).append("\n");
@@ -184,12 +188,12 @@ public class PrinterHelper {
         sb.append("[L]Shift: ")
                 .append("ADMIN".equalsIgnoreCase(data.shift) ? "Admin" : "Shift " + data.shift)
                 .append("\n");
-        sb.append("[C]").append(garis).append("\n");
+        sb.append("\n"); // jarak kosong sebelum daftar item, TANPA garis (niru web)
 
         for (StrukItem item : data.items) {
-            sb.append("[L]").append(item.namaProduk).append("\n");
-            sb.append("[L]  ").append(item.qty).append(" x Rp ").append(fmt.format(item.harga))
-                    .append("[R]Rp ").append(fmt.format(item.subtotal)).append("\n");
+            sb.append("[L]").append(item.namaProduk).append("[R]Rp ").append(fmt.format(item.subtotal)).append("\n");
+            sb.append("[L]").append(item.qty).append(" x Rp ").append(fmt.format(item.harga)).append("\n");
+            sb.append("[C]").append(garisTipis).append("\n"); // pemisah tipis tiap item (niru border #eee)
         }
         sb.append("[C]").append(garis).append("\n");
 
@@ -199,8 +203,7 @@ public class PrinterHelper {
         sb.append("[C]").append(garis).append("\n");
 
         sb.append("[C]Terima kasih atas kunjungannya\n");
-        sb.append("[C]*** Barang yang sudah dibeli ***\n");
-        sb.append("[C]*** tidak dapat ditukar ***\n");
+        sb.append("[C]*** Barang yang sudah dibeli tidak dapat ditukar ***\n");
         sb.append("\n\n");
 
         return sb.toString();

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/bg_item_keranjang"
     android:gravity="center_vertical"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:minHeight="56dp"
+    android:orientation="horizontal"
+    android:padding="8dp">
 
-    <!-- Nama dan harga satuan -->
+    <!-- Informasi Produk -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -18,77 +21,97 @@
             android:id="@+id/tvNamaItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nama Barang"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Sprite"
+            android:textColor="#202124"
             android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="#1A1A2E"/>
+            android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/tvHargaSatuanItem"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rp 0 / pcs"
-            android:textSize="11sp"
-            android:textColor="#78909C"/>
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvHargaSatuanItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rp7.000"
+                android:textColor="#7A7A7A"
+                android:textSize="10sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="•"
+                android:textColor="#BDBDBD"
+                android:textSize="10sp"/>
+
+            <TextView
+                android:id="@+id/tvSubtotalItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="Rp21.000"
+                android:textColor="#5149E5"
+                android:textSize="11sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
-    <!-- Tombol kurang -->
-    <TextView
-        android:id="@+id/btnKurang"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:text="-"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#5149E5"
-        android:gravity="center"
-        android:background="@drawable/bg_circle_outline"/>
-
-    <!-- Jumlah -->
-    <TextView
-        android:id="@+id/tvJumlahItem"
-        android:layout_width="32dp"
-        android:layout_height="wrap_content"
-        android:text="1"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:textColor="#1A1A2E"
-        android:gravity="center"/>
-
-    <!-- Tombol tambah -->
-    <TextView
-        android:id="@+id/btnTambah"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:text="+"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#5149E5"
-        android:gravity="center"
-        android:background="@drawable/bg_circle_outline"
-        android:layout_marginEnd="10dp"/>
-
-    <!-- Subtotal item -->
-    <TextView
-        android:id="@+id/tvSubtotalItem"
+    <!-- Qty -->
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rp 0"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:textColor="#1A1A2E"
-        android:minWidth="70dp"
-        android:gravity="end"/>
-
-    <!-- Tombol hapus item dari keranjang -->
-    <TextView
-        android:id="@+id/btnHapusItem"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_height="28dp"
         android:layout_marginStart="6dp"
-        android:text="🗑"
-        android:textSize="16sp"
-        android:background="@drawable/bg_circle_outline"
-        android:gravity="center"/>
+        android:background="@drawable/bg_qty"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnKurang"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="5dp"
+            android:src="@drawable/remove_24px"
+            app:tint="#5149E5"/>
+
+        <TextView
+            android:id="@+id/tvJumlahItem"
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="3"
+            android:textColor="#202124"
+            android:textSize="12sp"
+            android:textStyle="bold"/>
+
+        <ImageButton
+            android:id="@+id/btnTambah"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="5dp"
+            android:src="@drawable/add_24px"
+            app:tint="#5149E5"/>
+
+    </LinearLayout>
+
+    <!-- Hapus -->
+    <ImageButton
+        android:id="@+id/btnHapusItem"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="6dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="5dp"
+        android:src="@drawable/delete_24px"
+        app:tint="#E53935"/>
 
 </LinearLayout>

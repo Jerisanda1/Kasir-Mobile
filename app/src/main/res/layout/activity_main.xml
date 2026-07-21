@@ -133,12 +133,18 @@
             android:id="@+id/ivLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="↩  Logout"
+
+            android:text="Logout"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="#E53935"
+
+            android:drawableStart="@drawable/logout_24px"
+            android:drawablePadding="8dp"
+
             android:backgroundTint="@android:color/transparent"
             android:stateListAnimator="@null"
+
             android:gravity="start|center_vertical"
             android:paddingStart="14dp"
             android:paddingTop="14dp"

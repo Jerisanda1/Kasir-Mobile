@@ -8,6 +8,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +26,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword;
-    private TextView tvShowPassword;
+    private ImageView ivShowPassword;
     private Button btnLogin;
     private boolean passwordVisible = false;
     private SessionManager sessionManager;
@@ -39,23 +40,31 @@ public class LoginActivity extends AppCompatActivity {
 
         etUsername     = findViewById(R.id.etUsername);
         etPassword     = findViewById(R.id.etPassword);
-        tvShowPassword = findViewById(R.id.tvShowPassword);
+        ivShowPassword = findViewById(R.id.ivShowPassword);
         btnLogin       = findViewById(R.id.btnLogin);
 
-        tvShowPassword.setOnClickListener(v -> togglePassword());
+        ivShowPassword.setOnClickListener(v -> togglePassword());
         btnLogin.setOnClickListener(v -> prosesLogin());
     }
 
     private void togglePassword() {
+
         if (passwordVisible) {
-            etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            tvShowPassword.setText("👁");
+            etPassword.setTransformationMethod(
+                    PasswordTransformationMethod.getInstance());
+
+            ivShowPassword.setImageResource(R.drawable.visibility_24px);
+
             passwordVisible = false;
         } else {
-            etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            tvShowPassword.setText("🙈");
+            etPassword.setTransformationMethod(
+                    HideReturnsTransformationMethod.getInstance());
+
+            ivShowPassword.setImageResource(R.drawable.visibility_off_24px);
+
             passwordVisible = true;
         }
+
         etPassword.setSelection(etPassword.getText().length());
     }
 

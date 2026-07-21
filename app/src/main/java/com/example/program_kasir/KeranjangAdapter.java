@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import android.widget.ImageButton;
 
 public class KeranjangAdapter extends RecyclerView.Adapter<KeranjangAdapter.KeranjangViewHolder> {
 
@@ -57,7 +58,7 @@ public class KeranjangAdapter extends RecyclerView.Adapter<KeranjangAdapter.Kera
 
     static class KeranjangViewHolder extends RecyclerView.ViewHolder {
         TextView tvNamaItem, tvHargaSatuanItem, tvJumlahItem, tvSubtotalItem;
-        TextView btnTambah, btnKurang, btnHapusItem;
+        ImageButton btnTambah, btnKurang, btnHapusItem;
 
         public KeranjangViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -80,7 +80,20 @@ public class RiwayatFragment extends Fragment {
 
         @Override
         public void onGagal(String pesanError) {
-            if (isAdded()) Toast.makeText(requireContext(), "Gagal cetak: " + pesanError, Toast.LENGTH_LONG).show();
+            if (!isAdded()) return;
+
+            // Jika gagal, beri opsi untuk "Lupakan Printer" (reset MAC yang tersimpan).
+            // Ini sangat berguna jika kasir salah pilih perangkat Bluetooth sebelumnya,
+            // atau jika printernya ganti tapi MAC address yang lama masih nyangkut.
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Gagal Mencetak")
+                    .setMessage(pesanError + ".\n\nJika ini bukan printer yang benar, silakan reset pilihan printer.")
+                    .setPositiveButton("Tutup", null)
+                    .setNeutralButton("Reset Printer", (dialog, which) -> {
+                        PrinterHelper.lupakanPrinterTersimpan(requireContext());
+                        Toast.makeText(requireContext(), "Pilihan printer direset. Silakan klik Cetak lagi untuk memilih ulang.", Toast.LENGTH_LONG).show();
+                    })
+                    .show();
         }
     };
 

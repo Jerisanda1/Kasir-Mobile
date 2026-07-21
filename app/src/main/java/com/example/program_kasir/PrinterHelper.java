@@ -164,8 +164,14 @@ public class PrinterHelper {
         Handler mainHandler = new Handler(Looper.getMainLooper());
 
         new Thread(() -> {
+            BluetoothConnection connection = null;
             try {
-                BluetoothConnection connection = new BluetoothConnection(device);
+                connection = new BluetoothConnection(device);
+
+                // Coba buka koneksi secara eksplisit agar kalau gagal (misal printer mati)
+                // langsung masuk ke catch block dengan pesan yang jelas.
+                connection.connect();
+
                 // 203 = dpi standar printer thermal, 48f = lebar cetak (mm) utk kertas 58mm,
                 // 32 = perkiraan jumlah karakter per baris pada lebar itu
                 EscPosPrinter printer = new EscPosPrinter(connection, 203, 48f, 32);
@@ -179,6 +185,15 @@ public class PrinterHelper {
                 mainHandler.post(() -> {
                     if (callback != null) callback.onGagal(pesanError);
                 });
+            } finally {
+                // WAJIB: putus koneksi setelah selesai (sukses maupun gagal) agar socket Bluetooth
+                // di Android tidak "leaking" atau terkunci, yang bisa bikin cetak berikutnya gagal.
+                if (connection != null) {
+                    try {
+                        connection.disconnect();
+                    } catch (Exception ignored) {
+                    }
+                }
             }
         }).start();
     }

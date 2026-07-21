@@ -123,7 +123,7 @@
             </LinearLayout>
         </FrameLayout>
 
-        <!-- Spacer, mendorong Logout ke bawah -->
+        <!-- Spacer, mendorong Logout + info user ke bawah -->
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -148,7 +148,63 @@
             android:gravity="start|center_vertical"
             android:paddingStart="14dp"
             android:paddingTop="14dp"
-            android:paddingBottom="24dp"/>
+            android:paddingBottom="12dp"/>
+
+        <!-- Garis pemisah tipis sebelum info user -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Info user (nama & role), paling bawah -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="20dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/account_circle_24px"
+                app:tint="#5149E5"
+                android:contentDescription="@null"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvNamaKasirSidebar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#1A1A2E"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+
+                <TextView
+                    android:id="@+id/tvRoleShiftSidebar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="-"
+                    android:textSize="11sp"
+                    android:textColor="#78909C"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

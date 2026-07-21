@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Garis-garis barcode, lebar beda-beda -->
+    <path android:fillColor="#5149E5" android:pathData="M3,4 H4.5 V20 H3 Z"/>
+    <path android:fillColor="#5149E5" android:pathData="M6,4 H6.8 V20 H6 Z"/>
+    <path android:fillColor="#5149E5" android:pathData="M8.3,4 H10 V20 H8.3 Z"/>
+    <path android:fillColor="#5149E5" android:pathData="M11.5,4 H12.3 V20 H11.5 Z"/>
+    <path android:fillColor="#5149E5" android:pathData="M13.8,4 H15.5 V20 H13.8 Z"/>
+    <path android:fillColor="#5149E5" android:pathData="M17,4 H17.8 V20 H17 Z"/>
+    <path android:fillColor="#5149E5" android:pathData="M19.3,4 H21 V20 H19.3 Z"/>
+</vector>

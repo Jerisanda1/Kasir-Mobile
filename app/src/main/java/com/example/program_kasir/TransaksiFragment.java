@@ -99,10 +99,8 @@ public class TransaksiFragment extends Fragment {
             });
 
     private EditText etSearch, etDiskon, etJumlahBayar;
-    private EditText etScanBarcode;
     private TextView tvSubtotal, tvDiskon, tvTotalBayar, tvKembalian, tvTanggal, tvKeranjangKosong;
     private Button btnReset, btnBayar;
-    private TextView tvNamaKasir;
     private LinearLayout llKategori;
     private String kategoriDipilih = "Semua";
     private double totalBayar = 0;
@@ -127,11 +125,9 @@ public class TransaksiFragment extends Fragment {
         sessionManager = new SessionManager(ctx);
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        tampilkanInfoKasir();
         siapkanDataProduk();
         setupRecyclerView();
         setupListener();
-        setupScanBarcode(); // BARU
 
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
         tvTanggal.setText(sdf.format(new java.util.Date()));
@@ -154,30 +150,10 @@ public class TransaksiFragment extends Fragment {
         tvKeranjangKosong = v.findViewById(R.id.tvKeranjangKosong);
         btnReset          = v.findViewById(R.id.btnReset);
         btnBayar          = v.findViewById(R.id.btnBayar);
-        tvNamaKasir       = v.findViewById(R.id.tvNamaKasir);
         llKategori        = v.findViewById(R.id.llKategori);
-        etScanBarcode      = v.findViewById(R.id.etScanBarcode);
     }
 
     // BARU: susun teks "Nama (Role - Shift jam)" di header
-    private void tampilkanInfoKasir() {
-        String nama  = sessionManager.getNamaLengkap();
-        String level = sessionManager.getLevel();
-        String shift = sessionManager.getShift();
-
-        String levelLabel = "kasir".equalsIgnoreCase(level) ? "Kasir" : "Admin";
-        String teks;
-
-        if (shift != null && !shift.isEmpty()) {
-            String jamShift = "1".equals(shift) ? "07:00-15:00" : "15:00-23:00";
-            teks = nama + " (" + levelLabel + " - Shift " + shift + " (" + jamShift + "))";
-        } else {
-            teks = nama + " (" + levelLabel + ")";
-        }
-
-        tvNamaKasir.setText(teks);
-    }
-
     // DIUBAH: sebelumnya data dummy, sekarang fetch dari API
     private void siapkanDataProduk() {
         apiService.getProduk(sessionManager.getBearerToken(), null)
@@ -191,6 +167,7 @@ public class TransaksiFragment extends Fragment {
 
                             daftarProdukTampil.clear();
                             daftarProdukTampil.addAll(daftarProdukAsli);
+                            urutkanBerdasarkanKetersediaan(daftarProdukTampil);
 
                             if (produkAdapter != null) {
                                 produkAdapter.notifyDataSetChanged();
@@ -266,13 +243,34 @@ public class TransaksiFragment extends Fragment {
     }
 
     private void setupListener() {
-        // Search produk secara realtime
+        // Search produk secara realtime (tetap jalan baik buat ketik manual maupun sisa karakter dari scan)
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 filterProduk(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
+        });
+
+        // Kotak yang sama juga menerima scan barcode: alat scanner "mengetik" kode lalu otomatis
+        // menekan Enter/Done, jadi tinggal dengarkan aksi itu di kotak search yang sama.
+        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE
+                    || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+
+                String teks = etSearch.getText().toString().trim();
+
+                // Heuristik sederhana: barcode isinya cuma angka, beda dari nama produk yang biasanya
+                // ada hurufnya. Kalau yang di-scan/diketik angka semua, coba cocokkan sebagai barcode.
+                // Kalau bukan (user cuma ngetik nama produk lalu pencet Done), jangan dianggap scan gagal,
+                // cukup tutup keyboard saja dan biarkan hasil pencarian nama tampil seperti biasa.
+                if (!teks.isEmpty() && teks.matches("\\d+")) {
+                    prosesBarcodeScan(teks);
+                }
+                sembunyikanKeyboard();
+                return true;
+            }
+            return false;
         });
 
         btnReset.setOnClickListener(v -> resetForm());
@@ -297,18 +295,14 @@ public class TransaksiFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
     }
-    private void setupScanBarcode() {
-        etScanBarcode.setOnEditorActionListener((v, actionId, event) -> {
-            // Terpicu kalau tombol "Done"/Enter ditekan (baik dari scanner atau keyboard manual)
-            if (actionId == EditorInfo.IME_ACTION_DONE
-                    || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
 
-                String barcodeInput = etScanBarcode.getText().toString().trim();
-                prosesBarcodeScan(barcodeInput);
-                return true;
-            }
-            return false;
-        });
+    private void sembunyikanKeyboard() {
+        android.view.inputmethod.InputMethodManager imm =
+                (android.view.inputmethod.InputMethodManager) requireContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && getView() != null) {
+            imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+        }
     }
 
     private void prosesBarcodeScan(String barcode) {
@@ -329,9 +323,15 @@ public class TransaksiFragment extends Fragment {
             Toast.makeText(requireContext(), "Barcode tidak ditemukan: " + barcode, Toast.LENGTH_SHORT).show();
         }
 
-        // Bersihkan field, siapkan buat scan barang berikutnya
-        etScanBarcode.setText("");
-        etScanBarcode.requestFocus();
+        // Bersihkan kotak search, siapkan buat scan barang berikutnya (otomatis nampilin semua produk lagi)
+        etSearch.setText("");
+        etSearch.requestFocus();
+    }
+
+    // Produk normal (masih bisa dijual) tampil duluan, produk kadaluarsa/stok habis digeser ke bawah.
+    // Pakai List.sort (stable sort) supaya urutan asli di dalam masing-masing kelompok tetap terjaga.
+    private void urutkanBerdasarkanKetersediaan(List<Produk> daftar) {
+        daftar.sort((a, b) -> Boolean.compare(a.isTidakBisaDijual(), b.isTidakBisaDijual()));
     }
 
     // Menyaring daftar produk berdasarkan kata kunci pencarian
@@ -342,6 +342,7 @@ public class TransaksiFragment extends Fragment {
                 hasil.add(p);
             }
         }
+        urutkanBerdasarkanKetersediaan(hasil);
         daftarProdukTampil.clear();
         daftarProdukTampil.addAll(hasil);
         produkAdapter.notifyDataSetChanged();
@@ -397,6 +398,7 @@ public class TransaksiFragment extends Fragment {
             }
         }
 
+        urutkanBerdasarkanKetersediaan(hasil);
         daftarProdukTampil.clear();
         daftarProdukTampil.addAll(hasil);
         produkAdapter.notifyDataSetChanged();

@@ -9,50 +9,47 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="#5149E5"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+        android:layout_marginBottom="28dp"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp">
 
-        <!-- Icon Account -->
-        <ImageView
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:src="@drawable/account_circle_24px"
-            app:tint="#FFFFFF"
-            android:contentDescription="@null" />
-
-        <!-- Jarak -->
-        <Space
-            android:layout_width="12dp"
-            android:layout_height="wrap_content"/>
-
-        <!-- Nama dan Tanggal -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
+            <!-- Judul menu, tanpa icon -->
             <TextView
-                android:id="@+id/tvNamaKasir"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="-"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_weight="1"
+                android:text="Transaksi"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#5149E5" />
 
+            <!-- Tanggal, di kanan atas -->
             <TextView
                 android:id="@+id/tvTanggal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="-"
-                android:textColor="#CCFFFFFF"
+                android:textColor="#78909C"
                 android:textSize="12sp" />
 
         </LinearLayout>
+
+        <!-- Deskripsi di bawah judul -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Cari produk atau scan barcode untuk mulai transaksi"
+            android:textSize="12sp"
+            android:textColor="#78909C" />
 
     </LinearLayout>
 
@@ -75,50 +72,6 @@
             android:layout_weight="1.3"
             android:orientation="vertical"
             android:layout_marginEnd="12dp">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#FFFFFF">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <!-- Judul -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Scan Barcode"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#1A1A2E"
-                        android:layout_marginBottom="12dp"/>
-
-                    <!-- Input Barcode -->
-                    <EditText
-                        android:id="@+id/etScanBarcode"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:hint="Tempatkan kursor di sini dan scan barcode..."
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:background="@drawable/edittext_rounded"
-                        android:textSize="14sp"
-                        android:textColor="#1A1A2E"
-                        android:textColorHint="#B0BEC5"
-                        android:inputType="text"
-                        android:imeOptions="actionDone"
-                        android:singleLine="true"/>
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -154,14 +107,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:layout_marginBottom="10dp"
-                            android:hint="Cari produk..."
+                            android:hint="Cari produk atau scan barcode..."
                             android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
+                            android:paddingEnd="12dp"
                             android:background="@drawable/edittext_rounded"
                             android:textSize="14sp"
                             android:textColor="#1A1A2E"
                             android:textColorHint="#B0BEC5"
-                            android:inputType="text"/>
+                            android:inputType="text"
+                            android:imeOptions="actionDone"
+                            android:singleLine="true"
+                            android:drawableEnd="@drawable/ic_barcode"
+                            android:drawablePadding="8dp"/>
 
                         <HorizontalScrollView
                             android:layout_width="match_parent"

@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivIconTransaksi, ivIconRiwayat;
     private View vIndikatorAktif;
     private Button btnLogout;
+    private TextView tvNamaKasirSidebar, tvRoleShiftSidebar;
 
     private SessionManager sessionManager;
     private Menu menuAktif = Menu.TRANSAKSI;
@@ -46,8 +47,11 @@ public class MainActivity extends AppCompatActivity {
         tvLabelRiwayat   = findViewById(R.id.tvLabelRiwayat);
         vIndikatorAktif  = findViewById(R.id.vIndikatorAktif);
         btnLogout        = findViewById(R.id.ivLogout);
+        tvNamaKasirSidebar = findViewById(R.id.tvNamaKasirSidebar);
+        tvRoleShiftSidebar = findViewById(R.id.tvRoleShiftSidebar);
 
         sessionManager = new SessionManager(this);
+        tampilkanInfoUser();
 
         llMenuTransaksi.setOnClickListener(v -> pindahKeMenu(Menu.TRANSAKSI));
         llMenuRiwayat.setOnClickListener(v -> pindahKeMenu(Menu.RIWAYAT));
@@ -137,6 +141,26 @@ public class MainActivity extends AppCompatActivity {
 
         ivIconRiwayat.setColorFilter(
                 riwayatAktif ? 0xFFFFFFFF : 0xFF1A1A2E);
+    }
+
+    // Info user (nama + role + shift) sekarang tampil persisten di sidebar, bukan lagi di header fragment
+    private void tampilkanInfoUser() {
+        String nama  = sessionManager.getNamaLengkap();
+        String level = sessionManager.getLevel();
+        String shift = sessionManager.getShift();
+
+        String levelLabel = "kasir".equalsIgnoreCase(level) ? "Kasir" : "Admin";
+        String subTeks;
+
+        if (shift != null && !shift.isEmpty()) {
+            String jamShift = "1".equals(shift) ? "07:00-15:00" : "15:00-23:00";
+            subTeks = levelLabel + " - Shift " + shift + " (" + jamShift + ")";
+        } else {
+            subTeks = levelLabel;
+        }
+
+        tvNamaKasirSidebar.setText(nama);
+        tvRoleShiftSidebar.setText(subTeks);
     }
 
     private void konfirmasiLogout() {

@@ -10,35 +10,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="#5149E5"
+        android:layout_marginBottom="28dp"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp">
 
-        <!-- Judul -->
-        <LinearLayout
+        <!-- Judul, tanpa icon -->
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:id="@+id/ivIconRiwayat"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/receipt_long_24px"
-                app:tint="#FFFFFF"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Riwayat Transaksi"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"/>
-
-        </LinearLayout>
+            android:text="Riwayat Transaksi"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#5149E5"/>
 
         <!-- Subjudul -->
         <TextView
@@ -48,7 +33,7 @@
             android:layout_marginTop="4dp"
             android:text="Semua transaksi yang Anda proses akan tampil di sini"
             android:textSize="12sp"
-            android:textColor="#CCFFFFFF"/>
+            android:textColor="#78909C"/>
 
     </LinearLayout>
 

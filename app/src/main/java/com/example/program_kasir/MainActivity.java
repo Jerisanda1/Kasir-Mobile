@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -27,11 +25,11 @@ public class MainActivity extends AppCompatActivity {
 
     private enum Menu { TRANSAKSI, RIWAYAT }
 
-    private LinearLayout llMenuTransaksi, llMenuRiwayat, llTutupShift;
+    private LinearLayout llMenuTransaksi, llMenuRiwayat;
     private TextView tvLabelTransaksi, tvLabelRiwayat;
-    private ImageView ivIconTransaksi, ivIconRiwayat;
+    private ImageView ivIconTransaksi, ivIconRiwayat, btnTutupShift;
     private View vIndikatorAktif;
-    private Button btnLogout;
+    private TextView tvNamaKasirSidebar, tvRoleShiftSidebar;
 
     private SessionManager sessionManager;
     private ApiService apiService;
@@ -49,16 +47,17 @@ public class MainActivity extends AppCompatActivity {
         ivIconRiwayat   = findViewById(R.id.ivIconRiwayat);
         tvLabelRiwayat   = findViewById(R.id.tvLabelRiwayat);
         vIndikatorAktif  = findViewById(R.id.vIndikatorAktif);
-        btnLogout        = findViewById(R.id.ivLogout);
-        llTutupShift     = findViewById(R.id.llTutupShift);
+        btnTutupShift    = findViewById(R.id.btnTutupShift);
+        tvNamaKasirSidebar = findViewById(R.id.tvNamaKasirSidebar);
+        tvRoleShiftSidebar = findViewById(R.id.tvRoleShiftSidebar);
 
         sessionManager = new SessionManager(this);
         apiService = ApiClient.getClient().create(ApiService.class);
+        tampilkanInfoUser();
 
         llMenuTransaksi.setOnClickListener(v -> pindahKeMenu(Menu.TRANSAKSI));
         llMenuRiwayat.setOnClickListener(v -> pindahKeMenu(Menu.RIWAYAT));
-        btnLogout.setOnClickListener(v -> konfirmasiLogout());
-        llTutupShift.setOnClickListener(v -> ShiftKasHelper.mulaiTutupShift(this, apiService, sessionManager, () -> {
+        btnTutupShift.setOnClickListener(v -> ShiftKasHelper.mulaiTutupShift(this, apiService, sessionManager, () -> {
             // Tutup shift = sesi kerja kasir ini selesai -> otomatis logout, mulai bersih di shift berikutnya
             sessionManager.clearSession();
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -160,18 +159,23 @@ public class MainActivity extends AppCompatActivity {
                 riwayatAktif ? 0xFFFFFFFF : 0xFF1A1A2E);
     }
 
-    private void konfirmasiLogout() {
-        new AlertDialog.Builder(this)
-                .setTitle("Logout")
-                .setMessage("Apakah Anda yakin ingin keluar?")
-                .setPositiveButton("Ya, Keluar", (d, w) -> {
-                    sessionManager.clearSession();
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                })
-                .setNegativeButton("Batal", null)
-                .show();
+    // Info user (nama + role + shift) tampil persisten di sidebar
+    private void tampilkanInfoUser() {
+        String nama  = sessionManager.getNamaLengkap();
+        String level = sessionManager.getLevel();
+        String shift = sessionManager.getShift();
+
+        String levelLabel = "kasir".equalsIgnoreCase(level) ? "Kasir" : "Admin";
+        String subTeks;
+
+        if (shift != null && !shift.isEmpty()) {
+            String jamShift = "1".equals(shift) ? "07:00-15:00" : "15:00-23:00";
+            subTeks = levelLabel + " - Shift " + shift + " (" + jamShift + ")";
+        } else {
+            subTeks = levelLabel;
+        }
+
+        tvNamaKasirSidebar.setText(nama);
+        tvRoleShiftSidebar.setText(subTeks);
     }
 }

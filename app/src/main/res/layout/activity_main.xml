@@ -121,52 +121,81 @@
             </LinearLayout>
         </FrameLayout>
 
-        <!-- Spacer, mendorong Tutup Shift & Logout ke bawah -->
+        <!-- Spacer, mendorong info user + tombol tutup shift ke bawah -->
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
+        <!-- Garis pemisah tipis -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Info user (nama & role) + tombol akhiri shift, dalam 1 baris -->
         <LinearLayout
-            android:id="@+id/llTutupShift"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:padding="14dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="💰"
-                android:textSize="16sp"
-                android:layout_marginEnd="10dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tutup Shift"
-                android:textSize="14sp"
-                android:textColor="#1A1A2E"/>
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/ivLogout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="↩  Logout"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#E53935"
-            android:backgroundTint="@android:color/transparent"
-            android:stateListAnimator="@null"
-            android:gravity="start|center_vertical"
             android:paddingStart="14dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="24dp"/>
+            android:paddingEnd="10dp"
+            android:paddingBottom="20dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/account_circle_24px"
+                app:tint="#5149E5"
+                android:contentDescription="@null"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvNamaKasirSidebar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#1A1A2E"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+
+                <TextView
+                    android:id="@+id/tvRoleShiftSidebar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="-"
+                    android:textSize="11sp"
+                    android:textColor="#78909C"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+            </LinearLayout>
+
+            <!-- Tombol akhiri shift: tampilan icon logout saja, tapi alurnya sama seperti
+                 "Tutup Shift" (rekonsiliasi kas), BUKAN logout polos -->
+            <ImageView
+                android:id="@+id/btnTutupShift"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="8dp"
+                android:src="@drawable/logout_24px"
+                app:tint="#E53935"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Akhiri shift"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

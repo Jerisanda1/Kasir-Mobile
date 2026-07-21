@@ -70,6 +70,7 @@
         android:textSize="13sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
+        android:background="@drawable/bg_button_rounded"
         android:backgroundTint="#5149E5"
         android:stateListAnimator="@null"/>
 

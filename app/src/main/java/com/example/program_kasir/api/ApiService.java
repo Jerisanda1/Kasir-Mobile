@@ -1,12 +1,16 @@
 package com.example.program_kasir.api;
 
+import com.example.program_kasir.model.BukaShiftRequest;
 import com.example.program_kasir.model.DetailRiwayatResponse;
 import com.example.program_kasir.model.LoginRequest;
 import com.example.program_kasir.model.LoginResponse;
 import com.example.program_kasir.model.ProdukResponse;
 import com.example.program_kasir.model.RiwayatResponse;
+import com.example.program_kasir.model.ShiftKasResponse;
 import com.example.program_kasir.model.TransaksiRequest;
 import com.example.program_kasir.model.TransaksiResponse;
+import com.example.program_kasir.model.TutupShiftRequest;
+import com.example.program_kasir.model.TutupShiftResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -31,11 +35,22 @@ public interface ApiService {
 
     @GET("riwayat-transaksi")
     Call<RiwayatResponse> getRiwayat(@Header("Authorization") String token,
-                                      @Query("search") String search,
-                                      @Query("date") String date,
-                                      @Query("bulan") String bulan);
+                                     @Query("search") String search,
+                                     @Query("date") String date,
+                                     @Query("bulan") String bulan);
 
     @GET("riwayat-transaksi/detail/{kode}")
     Call<DetailRiwayatResponse> getDetailRiwayat(@Header("Authorization") String token,
-                                                  @Path("kode") String kodeTransaksi);
+                                                 @Path("kode") String kodeTransaksi);
+
+    @GET("shift-kas/aktif")
+    Call<ShiftKasResponse> getShiftAktif(@Header("Authorization") String token);
+
+    @POST("shift-kas/buka")
+    Call<ShiftKasResponse> bukaShift(@Header("Authorization") String token,
+                                     @Body BukaShiftRequest request);
+
+    @POST("shift-kas/tutup")
+    Call<TutupShiftResponse> tutupShift(@Header("Authorization") String token,
+                                        @Body TutupShiftRequest request);
 }

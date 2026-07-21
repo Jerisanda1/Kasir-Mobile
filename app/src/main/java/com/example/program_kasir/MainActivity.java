@@ -16,6 +16,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.program_kasir.api.ApiClient;
+import com.example.program_kasir.api.ApiService;
+
 // Host tunggal untuk halaman Transaksi & Riwayat.
 // Sidebar (logo, menu, tombol logout) di sini bersifat PERSISTEN alias tidak ikut
 // dibuat ulang saat pindah menu -- yang berpindah cuma isi kolom kanan (fragment)
@@ -24,14 +27,14 @@ public class MainActivity extends AppCompatActivity {
 
     private enum Menu { TRANSAKSI, RIWAYAT }
 
-    private LinearLayout llMenuTransaksi, llMenuRiwayat;
+    private LinearLayout llMenuTransaksi, llMenuRiwayat, llTutupShift;
     private TextView tvLabelTransaksi, tvLabelRiwayat;
     private ImageView ivIconTransaksi, ivIconRiwayat;
     private View vIndikatorAktif;
     private Button btnLogout;
-    private TextView tvNamaKasirSidebar, tvRoleShiftSidebar;
 
     private SessionManager sessionManager;
+    private ApiService apiService;
     private Menu menuAktif = Menu.TRANSAKSI;
 
     @Override
@@ -47,15 +50,29 @@ public class MainActivity extends AppCompatActivity {
         tvLabelRiwayat   = findViewById(R.id.tvLabelRiwayat);
         vIndikatorAktif  = findViewById(R.id.vIndikatorAktif);
         btnLogout        = findViewById(R.id.ivLogout);
-        tvNamaKasirSidebar = findViewById(R.id.tvNamaKasirSidebar);
-        tvRoleShiftSidebar = findViewById(R.id.tvRoleShiftSidebar);
+        llTutupShift     = findViewById(R.id.llTutupShift);
 
         sessionManager = new SessionManager(this);
-        tampilkanInfoUser();
+        apiService = ApiClient.getClient().create(ApiService.class);
 
         llMenuTransaksi.setOnClickListener(v -> pindahKeMenu(Menu.TRANSAKSI));
         llMenuRiwayat.setOnClickListener(v -> pindahKeMenu(Menu.RIWAYAT));
         btnLogout.setOnClickListener(v -> konfirmasiLogout());
+        llTutupShift.setOnClickListener(v -> ShiftKasHelper.mulaiTutupShift(this, apiService, sessionManager, () -> {
+            // Tutup shift = sesi kerja kasir ini selesai -> otomatis logout, mulai bersih di shift berikutnya
+            sessionManager.clearSession();
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }));
+
+        // Gerbang wajib: kalau kasir belum buka shift hari ini, dialog non-cancelable
+        // muncul menutupi konten sampai modal awal diisi. Dipanggil sekali di sini saja.
+        ShiftKasHelper.pastikanShiftSiap(this, apiService, sessionManager, () -> {
+            // Sudah siap (shift aktif) -- konten di belakang dialog memang sudah dipersiapkan
+            // di bawah, jadi tidak perlu ada yang dilakukan tambahan di sini.
+        });
 
         // Tentukan fragment awal (atau pulihkan yang sudah ada kalau Activity di-recreate)
         Fragment fragmentSaatIni = getSupportFragmentManager().findFragmentById(R.id.frameContent);
@@ -141,26 +158,6 @@ public class MainActivity extends AppCompatActivity {
 
         ivIconRiwayat.setColorFilter(
                 riwayatAktif ? 0xFFFFFFFF : 0xFF1A1A2E);
-    }
-
-    // Info user (nama + role + shift) sekarang tampil persisten di sidebar, bukan lagi di header fragment
-    private void tampilkanInfoUser() {
-        String nama  = sessionManager.getNamaLengkap();
-        String level = sessionManager.getLevel();
-        String shift = sessionManager.getShift();
-
-        String levelLabel = "kasir".equalsIgnoreCase(level) ? "Kasir" : "Admin";
-        String subTeks;
-
-        if (shift != null && !shift.isEmpty()) {
-            String jamShift = "1".equals(shift) ? "07:00-15:00" : "15:00-23:00";
-            subTeks = levelLabel + " - Shift " + shift + " (" + jamShift + ")";
-        } else {
-            subTeks = levelLabel;
-        }
-
-        tvNamaKasirSidebar.setText(nama);
-        tvRoleShiftSidebar.setText(subTeks);
     }
 
     private void konfirmasiLogout() {

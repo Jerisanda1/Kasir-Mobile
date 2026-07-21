@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog_putih"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔓 Buka Shift"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="18dp"
+        android:text="Hitung uang tunai yang ada di laci sekarang, lalu masukkan sebagai modal awal."
+        android:textSize="12sp"
+        android:textColor="#78909C"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Modal Awal"
+        android:textSize="12sp"
+        android:textColor="#1A1A2E"
+        android:textStyle="bold"
+        android:layout_marginBottom="6dp"/>
+
+    <EditText
+        android:id="@+id/etModalAwal"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:hint="Rp 0"
+        android:inputType="number"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="@drawable/edittext_rounded"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:layout_marginBottom="20dp"/>
+
+    <Button
+        android:id="@+id/btnBukaShift"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="Buka Shift &amp; Mulai Kerja"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#5149E5"
+        android:stateListAnimator="@null"/>
+
+</LinearLayout>

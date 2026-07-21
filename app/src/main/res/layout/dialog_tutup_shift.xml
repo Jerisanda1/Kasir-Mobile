@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog_putih"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔒 Tutup Shift"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Ringkasan otomatis dari sistem -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_info_note"
+        android:padding="14dp"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp">
+            <TextView
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:text="Modal Awal" android:textSize="12sp" android:textColor="#78909C"/>
+            <TextView
+                android:id="@+id/tvModalAwalTutup"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Rp 0" android:textSize="12sp" android:textColor="#1A1A2E"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+            <TextView
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:text="Penjualan Tunai" android:textSize="12sp" android:textColor="#78909C"/>
+            <TextView
+                android:id="@+id/tvPenjualanTutup"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Rp 0" android:textSize="12sp" android:textColor="#1A1A2E"/>
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#D0D5F0" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:text="Kas Seharusnya" android:textSize="13sp" android:textStyle="bold" android:textColor="#5149E5"/>
+            <TextView
+                android:id="@+id/tvKasSeharusnyaTutup"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Rp 0" android:textSize="13sp" android:textStyle="bold" android:textColor="#5149E5"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hitung uang fisik di laci sekarang, lalu masukkan di sini:"
+        android:textSize="12sp"
+        android:textColor="#1A1A2E"
+        android:layout_marginBottom="6dp"/>
+
+    <EditText
+        android:id="@+id/etKasFisik"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:hint="Rp 0"
+        android:inputType="number"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="@drawable/edittext_rounded"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:layout_marginBottom="20dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnBatalTutupShift"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Batal"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#78909C"
+            android:stateListAnimator="@null"/>
+
+        <Button
+            android:id="@+id/btnKonfirmasiTutupShift"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:text="Tutup Shift"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#C62828"
+            android:stateListAnimator="@null"/>
+    </LinearLayout>
+
+</LinearLayout>

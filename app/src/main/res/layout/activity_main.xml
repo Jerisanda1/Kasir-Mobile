@@ -50,9 +50,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"/>
 
-        <!-- ===== Kontainer menu: indikator aktif (kotak ungu) + 2 menu di atasnya =====
-             Indikator ditaruh sebagai child PERTAMA (paling belakang secara z-order),
-             lalu digeser (translationY) lewat kode ke posisi menu yang baru diklik. -->
+        <!-- ===== Kontainer menu: indikator aktif (kotak ungu) + 2 menu di atasnya ===== -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -123,88 +121,52 @@
             </LinearLayout>
         </FrameLayout>
 
-        <!-- Spacer, mendorong Logout + info user ke bawah -->
+        <!-- Spacer, mendorong Tutup Shift & Logout ke bawah -->
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/ivLogout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:text="Logout"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#E53935"
-
-            android:drawableStart="@drawable/logout_24px"
-            android:drawablePadding="8dp"
-
-            android:backgroundTint="@android:color/transparent"
-            android:stateListAnimator="@null"
-
-            android:gravity="start|center_vertical"
-            android:paddingStart="14dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="12dp"/>
-
-        <!-- Garis pemisah tipis sebelum info user -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"
-            android:layout_marginBottom="4dp"/>
-
-        <!-- Info user (nama & role), paling bawah -->
         <LinearLayout
+            android:id="@+id/llTutupShift"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="20dp">
+            android:padding="14dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground">
 
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/account_circle_24px"
-                app:tint="#5149E5"
-                android:contentDescription="@null"/>
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical">
+                android:text="💰"
+                android:textSize="16sp"
+                android:layout_marginEnd="10dp"/>
 
-                <TextView
-                    android:id="@+id/tvNamaKasirSidebar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="#1A1A2E"
-                    android:maxLines="1"
-                    android:ellipsize="end"/>
-
-                <TextView
-                    android:id="@+id/tvRoleShiftSidebar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="-"
-                    android:textSize="11sp"
-                    android:textColor="#78909C"
-                    android:maxLines="1"
-                    android:ellipsize="end"/>
-            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tutup Shift"
+                android:textSize="14sp"
+                android:textColor="#1A1A2E"/>
         </LinearLayout>
+
+        <Button
+            android:id="@+id/ivLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="↩  Logout"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#E53935"
+            android:backgroundTint="@android:color/transparent"
+            android:stateListAnimator="@null"
+            android:gravity="start|center_vertical"
+            android:paddingStart="14dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="24dp"/>
 
     </LinearLayout>
 

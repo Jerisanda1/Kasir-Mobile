@@ -12,6 +12,7 @@ public class StrukData {
     public String shift;   // "1", "2", atau "ADMIN"
     public List<StrukItem> items;
     public double total;
+    public double diskon;
     public double bayar;
     public double kembalian;
 }

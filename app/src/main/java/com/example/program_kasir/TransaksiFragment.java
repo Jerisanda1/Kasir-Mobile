@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Collections;
 
 import com.example.program_kasir.api.ApiClient;
 import com.example.program_kasir.api.ApiService;
@@ -200,39 +201,67 @@ public class TransaksiFragment extends Fragment {
         keranjangAdapter = new KeranjangAdapter(daftarKeranjang, new KeranjangAdapter.OnKeranjangActionListener() {
             @Override
             public void onTambahQty(int position) {
-                ItemKeranjang item = daftarKeranjang.get(position);
+                if (position == RecyclerView.NO_POSITION || position >= daftarKeranjang.size()) return;
 
-                // Cegah qty melebihi stok yang tersedia
-                if (item.getJumlah() + 1 > item.getProduk().getStok()) {
+                ItemKeranjang item = daftarKeranjang.get(position);
+                Produk produk = item.getProduk();
+
+                if (produk.getStok() < 1) {
                     Toast.makeText(requireContext(),
-                            "Stok " + item.getProduk().getNama() + " tidak mencukupi (sisa "
-                                    + item.getProduk().getStok() + ")", Toast.LENGTH_SHORT).show();
+                            "Stok " + produk.getNama() + " tidak mencukupi", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 item.setJumlah(item.getJumlah() + 1);
+                produk.kurangiStok(1);
                 keranjangAdapter.notifyItemChanged(position);
-                hitungOtomatis();
-            }
-            @Override
-            public void onKurangQty(int position) {
-                ItemKeranjang item = daftarKeranjang.get(position);
-                if (item.getJumlah() > 1) {
-                    item.setJumlah(item.getJumlah() - 1);
-                    keranjangAdapter.notifyItemChanged(position);
-                } else {
-                    daftarKeranjang.remove(position);
-                    keranjangAdapter.notifyItemRemoved(position);
-                    cekKeranjangKosong();
-                }
+
+                int posisiDiGrid = daftarProdukTampil.indexOf(produk);
+                if (posisiDiGrid != -1) produkAdapter.notifyItemChanged(posisiDiGrid);
+
                 hitungOtomatis();
             }
 
-            // BARU: hapus item langsung dari keranjang, berapa pun jumlahnya
+            @Override
+            public void onKurangQty(int position) {
+                if (position == RecyclerView.NO_POSITION || position >= daftarKeranjang.size()) return;
+
+                ItemKeranjang item = daftarKeranjang.get(position);
+                Produk produk = item.getProduk();
+
+                if (item.getJumlah() > 1) {
+                    item.setJumlah(item.getJumlah() - 1);
+                    produk.tambahStok(1);
+                    keranjangAdapter.notifyItemChanged(position);
+                } else {
+                    produk.tambahStok(item.getJumlah());
+                    daftarKeranjang.remove(position);
+                    keranjangAdapter.notifyItemRemoved(position);
+                    keranjangAdapter.notifyItemRangeChanged(position, daftarKeranjang.size());
+                    cekKeranjangKosong();
+                }
+
+                int posisiDiGrid = daftarProdukTampil.indexOf(produk);
+                if (posisiDiGrid != -1) produkAdapter.notifyItemChanged(posisiDiGrid);
+
+                hitungOtomatis();
+            }
+
             @Override
             public void onHapusItem(int position) {
+                if (position == RecyclerView.NO_POSITION || position >= daftarKeranjang.size()) return;
+
+                ItemKeranjang item = daftarKeranjang.get(position);
+                Produk produk = item.getProduk();
+                produk.tambahStok(item.getJumlah()); // kembalikan stok sepenuhnya
+
                 daftarKeranjang.remove(position);
                 keranjangAdapter.notifyItemRemoved(position);
+                keranjangAdapter.notifyItemRangeChanged(position, daftarKeranjang.size());
+
+                int posisiDiGrid = daftarProdukTampil.indexOf(produk);
+                if (posisiDiGrid != -1) produkAdapter.notifyItemChanged(posisiDiGrid);
+
                 cekKeranjangKosong();
                 hitungOtomatis();
             }
@@ -331,7 +360,7 @@ public class TransaksiFragment extends Fragment {
     // Produk normal (masih bisa dijual) tampil duluan, produk kadaluarsa/stok habis digeser ke bawah.
     // Pakai List.sort (stable sort) supaya urutan asli di dalam masing-masing kelompok tetap terjaga.
     private void urutkanBerdasarkanKetersediaan(List<Produk> daftar) {
-        daftar.sort((a, b) -> Boolean.compare(a.isTidakBisaDijual(), b.isTidakBisaDijual()));
+        Collections.sort(daftar, (a, b) -> Boolean.compare(a.isTidakBisaDijual(), b.isTidakBisaDijual()));
     }
 
     // Menyaring daftar produk berdasarkan kata kunci pencarian
@@ -414,31 +443,29 @@ public class TransaksiFragment extends Fragment {
             return;
         }
 
-        // Cek apakah produk ini sudah ada di keranjang
+        if (produk.getStok() < 1) {
+            Toast.makeText(requireContext(), "Stok " + produk.getNama() + " tidak mencukupi", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int posisiProdukDiGrid = daftarProdukTampil.indexOf(produk);
+
         for (ItemKeranjang item : daftarKeranjang) {
             if (item.getProduk().getKodeProduk() == produk.getKodeProduk()) {
-                // Cegah qty melebihi stok yang tersedia
-                if (item.getJumlah() + 1 > produk.getStok()) {
-                    Toast.makeText(requireContext(), "Stok " + produk.getNama() + " tidak mencukupi (sisa "
-                            + produk.getStok() + ")", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 item.setJumlah(item.getJumlah() + 1);
+                produk.kurangiStok(1);
                 keranjangAdapter.notifyDataSetChanged();
+                if (posisiProdukDiGrid != -1) produkAdapter.notifyItemChanged(posisiProdukDiGrid);
                 cekKeranjangKosong();
                 hitungOtomatis();
                 return;
             }
         }
 
-        // Produk belum ada di keranjang, cek dulu stoknya minimal 1
-        if (produk.getStok() < 1) {
-            Toast.makeText(requireContext(), "Stok " + produk.getNama() + " tidak mencukupi", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         daftarKeranjang.add(new ItemKeranjang(produk, 1));
+        produk.kurangiStok(1);
         keranjangAdapter.notifyItemInserted(daftarKeranjang.size() - 1);
+        if (posisiProdukDiGrid != -1) produkAdapter.notifyItemChanged(posisiProdukDiGrid);
         cekKeranjangKosong();
         hitungOtomatis();
     }
@@ -540,18 +567,26 @@ public class TransaksiFragment extends Fragment {
             return;
         }
 
+        // Hitung ulang nilai diskon untuk dikirim
+        double subtotal = 0;
+        for (ItemKeranjang item : daftarKeranjang) {
+            subtotal += item.getSubtotalItem();
+        }
+        double nilaiDiskon = subtotal - totalBayar;
+
         double kembalian = jumlahBayar - totalBayar;
-        tampilkanDialogKonfirmasi(jumlahBayar, kembalian);
+        tampilkanDialogKonfirmasi(nilaiDiskon, jumlahBayar, kembalian);
     }
 
     // BARU: dialog konfirmasi sebelum transaksi diproses ke server
-    private void tampilkanDialogKonfirmasi(double jumlahBayar, double kembalian) {
+    private void tampilkanDialogKonfirmasi(double nilaiDiskon, double jumlahBayar, double kembalian) {
         Context ctx = requireContext();
         View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_konfirmasi_transaksi, null);
 
         TextView tvJudulDetailProduk = dialogView.findViewById(R.id.tvJudulDetailProduk);
         LinearLayout llDaftarItem = dialogView.findViewById(R.id.llDaftarItemKonfirmasi);
         TextView tvKonfirmasiTotal = dialogView.findViewById(R.id.tvKonfirmasiTotal);
+        TextView tvKonfirmasiDiskon = dialogView.findViewById(R.id.tvKonfirmasiDiskon);
         TextView tvKonfirmasiBayar = dialogView.findViewById(R.id.tvKonfirmasiBayar);
         TextView tvKonfirmasiKembali = dialogView.findViewById(R.id.tvKonfirmasiKembali);
         Button btnProsesTransaksi = dialogView.findViewById(R.id.btnProsesTransaksi);
@@ -559,6 +594,7 @@ public class TransaksiFragment extends Fragment {
 
         tvJudulDetailProduk.setText("🛒 Detail Produk (" + daftarKeranjang.size() + " item)");
         tvKonfirmasiTotal.setText(formatRupiah(totalBayar));
+        tvKonfirmasiDiskon.setText(formatRupiah(nilaiDiskon));
         tvKonfirmasiBayar.setText(formatRupiah(jumlahBayar));
         tvKonfirmasiKembali.setText(formatRupiah(kembalian));
 
@@ -588,7 +624,7 @@ public class TransaksiFragment extends Fragment {
 
         btnProsesTransaksi.setOnClickListener(v -> {
             dialog.dismiss();
-            kirimTransaksiKeServer(jumlahBayar, kembalian);
+            kirimTransaksiKeServer(nilaiDiskon, jumlahBayar, kembalian);
         });
         btnBatalKonfirmasi.setOnClickListener(v -> dialog.dismiss());
 
@@ -596,7 +632,7 @@ public class TransaksiFragment extends Fragment {
     }
 
     // BARU: baru di sini transaksi beneran dikirim ke API, dipanggil setelah user tekan "Proses Transaksi"
-    private void kirimTransaksiKeServer(double jumlahBayar, double kembalian) {
+    private void kirimTransaksiKeServer(double nilaiDiskon, double jumlahBayar, double kembalian) {
         List<CartItem> cartItems = new ArrayList<>();
         for (ItemKeranjang item : daftarKeranjang) {
             cartItems.add(new CartItem(
@@ -606,7 +642,7 @@ public class TransaksiFragment extends Fragment {
             ));
         }
 
-        TransaksiRequest request = new TransaksiRequest(cartItems, totalBayar, jumlahBayar, kembalian);
+        TransaksiRequest request = new TransaksiRequest(cartItems, totalBayar, nilaiDiskon, jumlahBayar, kembalian);
 
         btnBayar.setEnabled(false);
         btnBayar.setText("Memproses...");
@@ -620,7 +656,7 @@ public class TransaksiFragment extends Fragment {
                         btnBayar.setText("Bayar");
 
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            tampilkanDialogSukses(response.body().getKodeTransaksi(), jumlahBayar, kembalian);
+                            tampilkanDialogSukses(response.body().getKodeTransaksi(), nilaiDiskon, jumlahBayar, kembalian);
                         } else {
                             String pesan = "Transaksi gagal diproses";
                             if (response.body() != null && response.body().getMessage() != null) {
@@ -647,7 +683,7 @@ public class TransaksiFragment extends Fragment {
     }
 
     // Dialog "Pembayaran Berhasil", sekarang tombol Cetak Nota beneran nyambung ke printer
-    private void tampilkanDialogSukses(String kodeTransaksi, double jumlahBayar, double kembalian) {
+    private void tampilkanDialogSukses(String kodeTransaksi, double nilaiDiskon, double jumlahBayar, double kembalian) {
         Context ctx = requireContext();
         View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_pembayaran_berhasil, null);
 
@@ -664,6 +700,7 @@ public class TransaksiFragment extends Fragment {
         data.waktu = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
         data.shift = sessionManager.getShift();
         data.total = totalBayar;
+        data.diskon = nilaiDiskon;
         data.bayar = jumlahBayar;
         data.kembalian = kembalian;
         data.items = new ArrayList<>();
@@ -708,8 +745,14 @@ public class TransaksiFragment extends Fragment {
     }
 
     private void resetForm() {
+        // Kembalikan dulu semua stok yang lagi "dipegang" keranjang, sebelum dikosongkan
+        for (ItemKeranjang item : daftarKeranjang) {
+            item.getProduk().tambahStok(item.getJumlah());
+        }
+
         daftarKeranjang.clear();
         keranjangAdapter.notifyDataSetChanged();
+        produkAdapter.notifyDataSetChanged();
         cekKeranjangKosong();
 
         etSearch.setText("");

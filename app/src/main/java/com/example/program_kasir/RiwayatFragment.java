@@ -36,6 +36,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -250,6 +251,12 @@ public class RiwayatFragment extends Fragment {
                             daftarRiwayatSemua.clear();
                             daftarRiwayatSemua.addAll(response.body().getData());
 
+                            // Urutkan agar transaksi terbaru muncul di paling atas (descending)
+                            Collections.sort(daftarRiwayatSemua, (a, b) -> {
+                                if (a.getCreatedAt() == null || b.getCreatedAt() == null) return 0;
+                                return b.getCreatedAt().compareTo(a.getCreatedAt());
+                            });
+
                             perbaruiSubjudul(tanpaFilter);
                             halamanSekarang = 1;
                             tampilkanHalaman();
@@ -373,7 +380,7 @@ public class RiwayatFragment extends Fragment {
                     public void onResponse(Call<DetailRiwayatResponse> call, Response<DetailRiwayatResponse> response) {
                         if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            StrukData data = bangunStrukData(response.body());
+                            StrukData data = bangunStrukData(response.body(), item);
                             NotaPreviewHelper.tampilkan(requireContext(), data, () -> mintaIzinLaluCetak(data));
                         } else {
                             Toast.makeText(requireContext(),
@@ -392,29 +399,53 @@ public class RiwayatFragment extends Fragment {
     }
 
     // Susun StrukData dari hasil API detail riwayat
-    private StrukData bangunStrukData(DetailRiwayatResponse detail) {
-        TransaksiRiwayat transaksi = detail.getData();
+    private StrukData bangunStrukData(DetailRiwayatResponse detail, TransaksiRiwayat itemAsal) {
+        TransaksiRiwayat transaksiDetail = detail.getData();
+        List<ItemDetailRiwayat> items = detail.getItems();
 
-        StrukData data = new StrukData();
-        data.kodeTransaksi = transaksi.getKodeTransaksi();
-        data.namaKasir = sessionManager.getNamaLengkap();
-        data.waktu = formatWaktuCetak(transaksi.getCreatedAt());
-        data.shift = transaksi.getShift();
-        data.total = transaksi.getTotal();
-        data.bayar = transaksi.getBayar();
-        data.kembalian = transaksi.getKembalian();
+        // LOGIKA PEMULIHAN: Mirip dengan bukaDialogDetail, gunakan data list jika data detail minim
+        double bayar = (transaksiDetail != null && transaksiDetail.getBayar() > 0) ? transaksiDetail.getBayar() : itemAsal.getBayar();
+        double kembali = (transaksiDetail != null && transaksiDetail.getKembalian() >= 0) ? transaksiDetail.getKembalian() : itemAsal.getKembalian();
+        double totalNet = (transaksiDetail != null && transaksiDetail.getTotal() > 0) ? transaksiDetail.getTotal() : itemAsal.getTotal();
+        double diskonServer = (transaksiDetail != null && transaksiDetail.getDiskon() > 0) ? transaksiDetail.getDiskon() : itemAsal.getDiskon();
 
-        data.items = new ArrayList<>();
-        if (detail.getItems() != null) {
-            for (ItemDetailRiwayat itemProduk : detail.getItems()) {
-                data.items.add(new StrukItem(
+        // Hitung subtotal kotor untuk pemulihan diskon
+        double subtotalKotor = 0;
+        List<StrukItem> strukItems = new ArrayList<>();
+        if (items != null) {
+            for (ItemDetailRiwayat itemProduk : items) {
+                double subItem = itemProduk.getQty() * itemProduk.getHarga();
+                subtotalKotor += subItem;
+                
+                strukItems.add(new StrukItem(
                         itemProduk.getNamaProduk(),
                         itemProduk.getQty(),
                         itemProduk.getHarga(),
-                        itemProduk.getSubtotal()
+                        subItem
                 ));
             }
         }
+
+        // Hitung diskon secara manual jika server mengembalikan 0
+        double nilaiDiskon = diskonServer;
+        double realTotalBayar = bayar - kembali;
+        if (nilaiDiskon <= 0 && subtotalKotor > realTotalBayar && realTotalBayar > 0) {
+            nilaiDiskon = subtotalKotor - realTotalBayar;
+        }
+
+        StrukData data = new StrukData();
+        data.kodeTransaksi = itemAsal.getKodeTransaksi();
+        data.namaKasir = (transaksiDetail != null && transaksiDetail.getNamaKasir() != null) ? transaksiDetail.getNamaKasir() : itemAsal.getNamaKasir();
+        if (data.namaKasir == null) data.namaKasir = sessionManager.getNamaLengkap();
+        
+        data.waktu = formatWaktuCetak(itemAsal.getCreatedAt());
+        data.shift = (transaksiDetail != null && transaksiDetail.getShift() != null) ? transaksiDetail.getShift() : itemAsal.getShift();
+        data.total = realTotalBayar > 0 ? realTotalBayar : totalNet;
+        data.diskon = nilaiDiskon;
+        data.bayar = bayar;
+        data.kembalian = kembali;
+        data.items = strukItems;
+
         return data;
     }
 
@@ -449,7 +480,7 @@ public class RiwayatFragment extends Fragment {
                     public void onResponse(Call<DetailRiwayatResponse> call, Response<DetailRiwayatResponse> response) {
                         if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            bukaDialogDetail(response.body());
+                            bukaDialogDetail(response.body(), item);
                         } else {
                             Toast.makeText(requireContext(),
                                     "Gagal mengambil detail transaksi", Toast.LENGTH_SHORT).show();
@@ -466,46 +497,69 @@ public class RiwayatFragment extends Fragment {
                 });
     }
 
-    private void bukaDialogDetail(DetailRiwayatResponse detail) {
+    private void bukaDialogDetail(DetailRiwayatResponse detail, TransaksiRiwayat itemAsal) {
         Context ctx = requireContext();
-        TransaksiRiwayat transaksi = detail.getData();
+        TransaksiRiwayat transaksiDetail = detail.getData();
         List<ItemDetailRiwayat> items = detail.getItems();
-        NumberFormat fmt = NumberFormat.getInstance(new Locale("id", "ID"));
+        
+        // LOGIKA PEMULIHAN: Gunakan data dari itemAsal jika data detail kosong/nol
+        // Seringkali API detail hanya memberikan daftar barang, sementara angka total ada di API list
+        double bayar = (transaksiDetail != null && transaksiDetail.getBayar() > 0) ? transaksiDetail.getBayar() : itemAsal.getBayar();
+        double kembali = (transaksiDetail != null && transaksiDetail.getKembalian() >= 0) ? transaksiDetail.getKembalian() : itemAsal.getKembalian();
+        double totalNet = (transaksiDetail != null && transaksiDetail.getTotal() > 0) ? transaksiDetail.getTotal() : itemAsal.getTotal();
+        double diskonServer = (transaksiDetail != null && transaksiDetail.getDiskon() > 0) ? transaksiDetail.getDiskon() : itemAsal.getDiskon();
 
+        NumberFormat fmt = NumberFormat.getInstance(new Locale("id", "ID"));
         View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_detail_riwayat, null);
 
         TextView tvJudul       = dialogView.findViewById(R.id.tvJudulDetailTransaksi);
         TextView tvTanggal     = dialogView.findViewById(R.id.tvTanggalDetail);
         LinearLayout llItem    = dialogView.findViewById(R.id.llDaftarItemDetail);
         TextView tvTotal       = dialogView.findViewById(R.id.tvDetailTotal);
+        TextView tvDiskon      = dialogView.findViewById(R.id.tvDetailDiskon);
         TextView tvBayar       = dialogView.findViewById(R.id.tvDetailBayar);
         TextView tvKembali     = dialogView.findViewById(R.id.tvDetailKembali);
         TextView tvKasirShift  = dialogView.findViewById(R.id.tvKasirShiftDetail);
         Button btnTutup        = dialogView.findViewById(R.id.btnTutupDetail);
+        Button btnCetak        = dialogView.findViewById(R.id.btnCetakNotaDetail);
 
-        tvJudul.setText(transaksi.getKodeTransaksi());
-        tvTanggal.setText(formatTanggalLengkap(transaksi.getCreatedAt()));
-        tvTotal.setText("Rp " + fmt.format(transaksi.getTotal()));
-        tvBayar.setText("Rp " + fmt.format(transaksi.getBayar()));
-        tvKembali.setText("Rp " + fmt.format(transaksi.getKembalian()));
-
-        tvKasirShift.setText("Kasir: " + sessionManager.getNamaLengkap() + "  •  Shift " + transaksi.getShift());
-
+        tvJudul.setText(itemAsal.getKodeTransaksi());
+        tvTanggal.setText(formatTanggalLengkap(itemAsal.getCreatedAt()));
+        
+        // Hitung subtotal kotor dari daftar item
+        double subtotalKotor = 0;
         llItem.removeAllViews();
         if (items != null) {
             for (ItemDetailRiwayat itemProduk : items) {
-                View itemView = LayoutInflater.from(ctx)
-                        .inflate(R.layout.item_konfirmasi_produk, llItem, false);
-                TextView tvNama       = itemView.findViewById(R.id.tvNamaProdukKonfirmasi);
-                TextView tvQtyHarga   = itemView.findViewById(R.id.tvQtyHargaKonfirmasi);
-                TextView tvSubtotal   = itemView.findViewById(R.id.tvSubtotalProdukKonfirmasi);
-
-                tvNama.setText(itemProduk.getNamaProduk());
-                tvQtyHarga.setText(itemProduk.getQty() + " x Rp " + fmt.format(itemProduk.getHarga()));
-                tvSubtotal.setText("Rp " + fmt.format(itemProduk.getSubtotal()));
+                double subItem = itemProduk.getQty() * itemProduk.getHarga();
+                subtotalKotor += subItem;
+                
+                View itemView = LayoutInflater.from(ctx).inflate(R.layout.item_konfirmasi_produk, llItem, false);
+                ((TextView) itemView.findViewById(R.id.tvNamaProdukKonfirmasi)).setText(itemProduk.getNamaProduk());
+                ((TextView) itemView.findViewById(R.id.tvQtyHargaKonfirmasi)).setText(itemProduk.getQty() + " x Rp " + fmt.format(itemProduk.getHarga()));
+                ((TextView) itemView.findViewById(R.id.tvSubtotalProdukKonfirmasi)).setText("Rp " + fmt.format(subItem));
                 llItem.addView(itemView);
             }
         }
+
+        // Hitung diskon secara manual jika server mengembalikan 0
+        double nilaiDiskon = diskonServer;
+        double realTotalBayar = bayar - kembali;
+        
+        if (nilaiDiskon <= 0 && subtotalKotor > realTotalBayar && realTotalBayar > 0) {
+            nilaiDiskon = subtotalKotor - realTotalBayar;
+        }
+
+        tvTotal.setText("Rp " + fmt.format(realTotalBayar > 0 ? realTotalBayar : totalNet));
+        tvDiskon.setText("Rp " + fmt.format(nilaiDiskon));
+        tvBayar.setText("Rp " + fmt.format(bayar));
+        tvKembali.setText("Rp " + fmt.format(kembali));
+
+        String namaKasir = (transaksiDetail != null && transaksiDetail.getNamaKasir() != null) ? transaksiDetail.getNamaKasir() : itemAsal.getNamaKasir();
+        if (namaKasir == null) namaKasir = sessionManager.getNamaLengkap();
+        
+        String shift = (transaksiDetail != null && transaksiDetail.getShift() != null) ? transaksiDetail.getShift() : itemAsal.getShift();
+        tvKasirShift.setText("Kasir: " + namaKasir + "  •  Shift " + shift);
 
         AlertDialog dialog = new AlertDialog.Builder(ctx)
                 .setView(dialogView)
@@ -516,6 +570,11 @@ public class RiwayatFragment extends Fragment {
             dialog.getWindow().setBackgroundDrawable(
                     new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
+
+        btnCetak.setOnClickListener(v -> {
+            StrukData dataCetak = bangunStrukData(detail, itemAsal);
+            NotaPreviewHelper.tampilkan(ctx, dataCetak, () -> mintaIzinLaluCetak(dataCetak));
+        });
 
         btnTutup.setOnClickListener(v -> dialog.dismiss());
         dialog.show();

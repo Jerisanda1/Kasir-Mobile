@@ -68,8 +68,51 @@ public class Produk {
 
     // Label yang ditampilkan di card kalau tidak bisa dijual
     public String getLabelTidakBisaDijual() {
-        if (isExpired()) return "KADALUARSA";
+        if (isExpired()) return "EXPIRED";
         if (isStokHabis()) return "STOK HABIS";
         return "";
+    }
+    private static final int BATAS_STOK_MENIPIS = 5;   // sesuaikan kalau perlu
+    private static final int BATAS_HARI_AKAN_EXPIRED = 7;
+
+    // Stok menipis: masih bisa dijual, tapi tinggal sedikit
+    public boolean isStokMenipis() {
+        return !isStokHabis() && stok <= BATAS_STOK_MENIPIS;
+    }
+
+    // Akan kadaluarsa dalam waktu dekat (belum lewat, tapi mendekati)
+    public boolean isAkanExpired() {
+        if (tanggalExp == null || tanggalExp.isEmpty() || isExpired()) return false;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date tglExp = sdf.parse(tanggalExp);
+            if (tglExp == null) return false;
+            long selisihMs = tglExp.getTime() - new Date().getTime();
+            long selisihHari = selisihMs / (1000 * 60 * 60 * 24);
+            return selisihHari >= 0 && selisihHari <= BATAS_HARI_AKAN_EXPIRED;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Label peringatan (beda dari label "tidak bisa dijual" yang sudah ada)
+    public String getLabelPeringatan() {
+        if (isAkanExpired()) return "SEGERA EXPIRED";
+        if (isStokMenipis()) return "STOK MENIPIS";
+        return "";
+    }
+
+    public boolean adaPeringatan() {
+        return !isTidakBisaDijual() && (isStokMenipis() || isAkanExpired());
+    }
+
+    // Dipakai TransaksiFragment supaya angka stok di card berkurang/bertambah realtime
+    public void kurangiStok(int qty) {
+        stok -= qty;
+        if (stok < 0) stok = 0;
+    }
+
+    public void tambahStok(int qty) {
+        stok += qty;
     }
 }

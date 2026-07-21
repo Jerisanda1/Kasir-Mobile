@@ -96,6 +96,33 @@
                 android:layout_marginEnd="6dp"
                 android:orientation="vertical"
                 android:gravity="center"
+                android:background="@drawable/bg_box_orange"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DISKON"
+                    android:textSize="10sp"
+                    android:textColor="#F5821F"/>
+
+                <TextView
+                    android:id="@+id/tvDetailDiskon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp 0"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#F5821F"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:orientation="vertical"
+                android:gravity="center"
                 android:background="@drawable/bg_box_green"
                 android:padding="12dp">
 
@@ -169,16 +196,36 @@
                 android:textColor="#78909C"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btnTutupDetail"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Tutup"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#78909C"
-            android:stateListAnimator="@null"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnCetakNotaDetail"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="10dp"
+                android:text="Cetak Nota"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#5149E5"
+                android:stateListAnimator="@null"/>
+
+            <Button
+                android:id="@+id/btnTutupDetail"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Tutup"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#78909C"
+                android:stateListAnimator="@null"/>
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

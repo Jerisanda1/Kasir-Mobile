@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp">
 
+    <!-- Card Utama -->
     <LinearLayout
         android:id="@+id/cardProduk"
         android:layout_width="match_parent"
@@ -19,7 +20,6 @@
             android:layout_height="80dp"
             android:layout_marginBottom="6dp">
 
-            <!-- Fallback emoji, tampil kalau foto tidak ada -->
             <TextView
                 android:id="@+id/tvIconProduk"
                 android:layout_width="match_parent"
@@ -29,7 +29,6 @@
                 android:text="🛒"
                 android:textSize="24sp"/>
 
-            <!-- Foto asli produk dari server, tampil kalau foto_url ada -->
             <ImageView
                 android:id="@+id/ivFotoProduk"
                 android:layout_width="match_parent"
@@ -62,20 +61,52 @@
 
     </LinearLayout>
 
-    <!-- Badge status (Kadaluarsa / Stok Habis), pill kecil di pojok kanan atas -->
+    <!-- Stok: Menempel di pojok KIRI-ATAS border card -->
+    <TextView
+        android:id="@+id/tvStokProduk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:background="@drawable/bg_badge_stok"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="0 Stok"
+        android:textColor="#000000"
+        android:textSize="9sp"
+        android:textStyle="bold"/>
+
+    <!-- Badge status: Menempel di pojok KANAN-ATAS border card -->
     <TextView
         android:id="@+id/tvBadgeStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_margin="8dp"
         android:background="@drawable/bg_badge_pill"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:text="STOK HABIS"
-        android:textColor="#FFFFFF"
+        android:textColor="#E53935"
+        android:textSize="9sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+    <!-- Badge warning: Menempel di pojok KANAN-ATAS border card -->
+    <TextView
+        android:id="@+id/tvBadgeWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:background="@drawable/bg_badge_warning"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="STOK MENIPIS"
+        android:textColor="#F97316"
         android:textSize="9sp"
         android:textStyle="bold"
         android:visibility="gone"/>

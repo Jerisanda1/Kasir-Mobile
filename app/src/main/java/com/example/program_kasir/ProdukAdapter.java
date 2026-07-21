@@ -62,14 +62,25 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
             holder.tvIconProduk.setText(produk.getIconEmoji());
         }
 
-        // Cek status produk: kadaluarsa atau stok habis
+        holder.tvStokProduk.setText(produk.getStok() + " Stok");
+
+// Cek status produk: kadaluarsa atau stok habis (blokir klik)
         if (produk.isTidakBisaDijual()) {
             holder.tvBadgeStatus.setVisibility(View.VISIBLE);
             holder.tvBadgeStatus.setText(produk.getLabelTidakBisaDijual());
-            holder.itemView.setOnClickListener(null); // tetap matikan klik, walau tampilan tidak buram
+            holder.tvBadgeWarning.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(null);
         } else {
             holder.tvBadgeStatus.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(v -> listener.onProdukClick(produk));
+
+            // Peringatan (tetap bisa diklik): stok menipis / segera expired
+            if (produk.adaPeringatan()) {
+                holder.tvBadgeWarning.setVisibility(View.VISIBLE);
+                holder.tvBadgeWarning.setText(produk.getLabelPeringatan());
+            } else {
+                holder.tvBadgeWarning.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -79,18 +90,20 @@ public class ProdukAdapter extends RecyclerView.Adapter<ProdukAdapter.ProdukView
     }
 
     static class ProdukViewHolder extends RecyclerView.ViewHolder {
-        TextView tvIconProduk, tvNamaProduk, tvHargaProduk, tvBadgeStatus;
+        TextView tvIconProduk, tvNamaProduk, tvHargaProduk, tvBadgeStatus, tvStokProduk, tvBadgeWarning;
         ImageView ivFotoProduk;
         View cardProduk;
 
         public ProdukViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvIconProduk  = itemView.findViewById(R.id.tvIconProduk);
-            tvNamaProduk  = itemView.findViewById(R.id.tvNamaProduk);
-            tvHargaProduk = itemView.findViewById(R.id.tvHargaProduk);
-            ivFotoProduk  = itemView.findViewById(R.id.ivFotoProduk);
-            tvBadgeStatus = itemView.findViewById(R.id.tvBadgeStatus);
-            cardProduk    = itemView.findViewById(R.id.cardProduk);
+            tvIconProduk   = itemView.findViewById(R.id.tvIconProduk);
+            tvNamaProduk   = itemView.findViewById(R.id.tvNamaProduk);
+            tvHargaProduk  = itemView.findViewById(R.id.tvHargaProduk);
+            ivFotoProduk   = itemView.findViewById(R.id.ivFotoProduk);
+            tvBadgeStatus  = itemView.findViewById(R.id.tvBadgeStatus);
+            tvStokProduk   = itemView.findViewById(R.id.tvStokProduk);
+            tvBadgeWarning = itemView.findViewById(R.id.tvBadgeWarning);
+            cardProduk     = itemView.findViewById(R.id.cardProduk);
         }
     }
 }

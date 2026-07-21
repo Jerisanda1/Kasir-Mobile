@@ -235,6 +235,12 @@ public class PrinterHelper {
         }
         sb.append("[C]").append(garis).append("\n");
 
+        if (data.diskon > 0) {
+            double subtotal = data.total + data.diskon;
+            sb.append("[L]Subtotal:[R]Rp ").append(fmt.format(subtotal)).append("\n");
+            sb.append("[L]Diskon:[R]- Rp ").append(fmt.format(data.diskon)).append("\n");
+        }
+
         sb.append("[L]Total:[R]Rp ").append(fmt.format(data.total)).append("\n");
         sb.append("[L]Bayar:[R]Rp ").append(fmt.format(data.bayar)).append("\n");
         sb.append("[L]Kembali:[R]Rp ").append(fmt.format(data.kembalian)).append("\n");

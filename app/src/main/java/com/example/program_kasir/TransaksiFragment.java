@@ -102,6 +102,9 @@ public class TransaksiFragment extends Fragment {
     private TextView tvSubtotal, tvDiskon, tvTotalBayar, tvKembalian, tvTanggal, tvKeranjangKosong;
     private Button btnReset, btnBayar;
     private LinearLayout llKategori;
+    private LinearLayout llInputTunai, llInfoQris;
+    private Button btnMetodeTunai, btnMetodeQris;
+    private String metodePembayaran = "tunai"; // default: tunai
     private String kategoriDipilih = "Semua";
     private double totalBayar = 0;
 
@@ -151,6 +154,10 @@ public class TransaksiFragment extends Fragment {
         btnReset          = v.findViewById(R.id.btnReset);
         btnBayar          = v.findViewById(R.id.btnBayar);
         llKategori        = v.findViewById(R.id.llKategori);
+        llInputTunai      = v.findViewById(R.id.llInputTunai);
+        llInfoQris        = v.findViewById(R.id.llInfoQris);
+        btnMetodeTunai    = v.findViewById(R.id.btnMetodeTunai);
+        btnMetodeQris     = v.findViewById(R.id.btnMetodeQris);
     }
 
     // BARU: susun teks "Nama (Role - Shift jam)" di header
@@ -275,6 +282,10 @@ public class TransaksiFragment extends Fragment {
 
         btnReset.setOnClickListener(v -> resetForm());
         btnBayar.setOnClickListener(v -> prosesBayar());
+
+        btnMetodeTunai.setOnClickListener(v -> pilihMetodePembayaran("tunai"));
+        btnMetodeQris.setOnClickListener(v -> pilihMetodePembayaran("qris"));
+        pilihMetodePembayaran("tunai"); // tampilan awal default Tunai
 
         // Hitung ulang otomatis setiap diskon diketik
         etDiskon.addTextChangedListener(new TextWatcher() {
@@ -518,6 +529,37 @@ public class TransaksiFragment extends Fragment {
     }
 
     // DIUBAH: sekarang cuma validasi lalu tampilkan dialog konfirmasi dulu
+    // Atur tampilan toggle + tampilkan/sembunyikan input yang sesuai
+    private void pilihMetodePembayaran(String metode) {
+        metodePembayaran = metode;
+
+        if ("tunai".equals(metode)) {
+            btnMetodeTunai.setBackgroundResource(R.drawable.bg_button_rounded);
+            btnMetodeTunai.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    android.graphics.Color.parseColor("#5149E5")));
+            btnMetodeTunai.setTextColor(android.graphics.Color.WHITE);
+
+            btnMetodeQris.setBackground(null);
+            btnMetodeQris.setTextColor(android.graphics.Color.parseColor("#78909C"));
+
+            llInputTunai.setVisibility(View.VISIBLE);
+            llInfoQris.setVisibility(View.GONE);
+
+            hitungKembalian(); // pastikan kembalian ke-hitung ulang sesuai isi etJumlahBayar
+        } else {
+            btnMetodeQris.setBackgroundResource(R.drawable.bg_button_rounded);
+            btnMetodeQris.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    android.graphics.Color.parseColor("#5149E5")));
+            btnMetodeQris.setTextColor(android.graphics.Color.WHITE);
+
+            btnMetodeTunai.setBackground(null);
+            btnMetodeTunai.setTextColor(android.graphics.Color.parseColor("#78909C"));
+
+            llInputTunai.setVisibility(View.GONE);
+            llInfoQris.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void prosesBayar() {
         if (daftarKeranjang.isEmpty()) {
             Toast.makeText(requireContext(), "Keranjang masih kosong, pilih produk dahulu!",
@@ -525,22 +567,32 @@ public class TransaksiFragment extends Fragment {
             return;
         }
 
-        String sJumlahBayar = etJumlahBayar.getText().toString().trim();
-        if (sJumlahBayar.isEmpty()) {
-            etJumlahBayar.setError("Jumlah bayar tidak boleh kosong!");
-            etJumlahBayar.requestFocus();
-            return;
+        double jumlahBayar;
+        double kembalian;
+
+        if ("qris".equals(metodePembayaran)) {
+            // QRIS manual: dianggap dibayar pas sesuai total, tidak ada kembalian
+            jumlahBayar = totalBayar;
+            kembalian = 0;
+        } else {
+            String sJumlahBayar = etJumlahBayar.getText().toString().trim();
+            if (sJumlahBayar.isEmpty()) {
+                etJumlahBayar.setError("Jumlah bayar tidak boleh kosong!");
+                etJumlahBayar.requestFocus();
+                return;
+            }
+
+            jumlahBayar = Double.parseDouble(sJumlahBayar);
+
+            if (jumlahBayar < totalBayar) {
+                etJumlahBayar.setError("Jumlah bayar kurang dari total!");
+                etJumlahBayar.requestFocus();
+                return;
+            }
+
+            kembalian = jumlahBayar - totalBayar;
         }
 
-        double jumlahBayar = Double.parseDouble(sJumlahBayar);
-
-        if (jumlahBayar < totalBayar) {
-            etJumlahBayar.setError("Jumlah bayar kurang dari total!");
-            etJumlahBayar.requestFocus();
-            return;
-        }
-
-        double kembalian = jumlahBayar - totalBayar;
         tampilkanDialogKonfirmasi(jumlahBayar, kembalian);
     }
 
@@ -606,7 +658,7 @@ public class TransaksiFragment extends Fragment {
             ));
         }
 
-        TransaksiRequest request = new TransaksiRequest(cartItems, totalBayar, jumlahBayar, kembalian);
+        TransaksiRequest request = new TransaksiRequest(cartItems, totalBayar, jumlahBayar, kembalian, metodePembayaran);
 
         btnBayar.setEnabled(false);
         btnBayar.setText("Memproses...");
@@ -715,6 +767,7 @@ public class TransaksiFragment extends Fragment {
         etSearch.setText("");
         etDiskon.setText("");
         etJumlahBayar.setText("");
+        pilihMetodePembayaran("tunai");
 
         hitungOtomatis();
 

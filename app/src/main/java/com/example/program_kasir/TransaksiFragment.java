@@ -4,14 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,7 +105,10 @@ public class TransaksiFragment extends Fragment {
     private TextView tvSubtotal, tvDiskon, tvTotalBayar, tvKembalian, tvTanggal, tvKeranjangKosong;
     private Button btnReset, btnBayar;
     private LinearLayout llKategori;
-    private LinearLayout llInputTunai, llInfoQris;
+    private FrameLayout flMetodeToggle;
+    private View vIndikatorMetode;
+    private TextView tvCatatanQris;
+    private LinearLayout llKontenPembayaran;
     private Button btnMetodeTunai, btnMetodeQris;
     private String metodePembayaran = "tunai"; // default: tunai
     private String kategoriDipilih = "Semua";
@@ -137,6 +143,16 @@ public class TransaksiFragment extends Fragment {
 
         // Tampilkan kondisi awal Rp 0
         hitungOtomatis();
+
+        // Posisikan indikator toggle metode pembayaran ke Tunai (default) SETELAH layout
+        // selesai diukur -- baru saat itu getWidth()/getLeft() tombol bernilai valid.
+        // Pola sama persis dengan indikator sidebar di MainActivity.onCreate().
+        btnMetodeTunai.post(() -> {
+            vIndikatorMetode.setTranslationX(btnMetodeTunai.getLeft());
+            ViewGroup.LayoutParams lp = vIndikatorMetode.getLayoutParams();
+            lp.width = btnMetodeTunai.getWidth();
+            vIndikatorMetode.setLayoutParams(lp);
+        });
     }
 
     private void inisialisasiView(View v) {
@@ -154,8 +170,10 @@ public class TransaksiFragment extends Fragment {
         btnReset          = v.findViewById(R.id.btnReset);
         btnBayar          = v.findViewById(R.id.btnBayar);
         llKategori        = v.findViewById(R.id.llKategori);
-        llInputTunai      = v.findViewById(R.id.llInputTunai);
-        llInfoQris        = v.findViewById(R.id.llInfoQris);
+        flMetodeToggle    = v.findViewById(R.id.flMetodeToggle);
+        vIndikatorMetode  = v.findViewById(R.id.vIndikatorMetode);
+        tvCatatanQris     = v.findViewById(R.id.tvCatatanQris);
+        llKontenPembayaran = v.findViewById(R.id.llKontenPembayaran);
         btnMetodeTunai    = v.findViewById(R.id.btnMetodeTunai);
         btnMetodeQris     = v.findViewById(R.id.btnMetodeQris);
     }
@@ -529,35 +547,55 @@ public class TransaksiFragment extends Fragment {
     }
 
     // DIUBAH: sekarang cuma validasi lalu tampilkan dialog konfirmasi dulu
-    // Atur tampilan toggle + tampilkan/sembunyikan input yang sesuai
+    // Atur tampilan toggle (indikator geser) + tampilkan/sembunyikan input yang sesuai
     private void pilihMetodePembayaran(String metode) {
         metodePembayaran = metode;
 
+        // Animasikan perubahan tinggi konten kartu Pembayaran (munculnya/hilangnya
+        // etJumlahBayar) secara halus. Tanpa ini, View.GONE langsung "meloncat" ke
+        // tinggi barunya seketika -- efek jeblos yang mau dihilangkan.
+        // Harus dipanggil SEBELUM visibility-nya diubah, dan menyasar container
+        // TERDEKAT yang tinggi totalnya berubah (llKontenPembayaran), bukan flMetodeToggle.
+        TransitionManager.beginDelayedTransition(llKontenPembayaran);
+
+        View target = "tunai".equals(metode) ? btnMetodeTunai : btnMetodeQris;
+        geserIndikatorMetode(target);
+
+        // Warna teks tombol: yang aktif jadi aksen ungu, yang tidak aktif jadi abu-abu.
+        // Indikator (kotak outline putih) yang bergerak sudah cukup menandai pilihan,
+        // jadi tombolnya sendiri tidak perlu background terpisah lagi.
+        int warnaAktif = android.graphics.Color.parseColor("#5149E5");
+        int warnaNonaktif = android.graphics.Color.parseColor("#78909C");
+        btnMetodeTunai.setTextColor("tunai".equals(metode) ? warnaAktif : warnaNonaktif);
+        btnMetodeQris.setTextColor("qris".equals(metode) ? warnaAktif : warnaNonaktif);
+
         if ("tunai".equals(metode)) {
-            btnMetodeTunai.setBackgroundResource(R.drawable.bg_button_rounded);
-            btnMetodeTunai.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                    android.graphics.Color.parseColor("#5149E5")));
-            btnMetodeTunai.setTextColor(android.graphics.Color.WHITE);
-
-            btnMetodeQris.setBackground(null);
-            btnMetodeQris.setTextColor(android.graphics.Color.parseColor("#78909C"));
-
-            llInputTunai.setVisibility(View.VISIBLE);
-            llInfoQris.setVisibility(View.GONE);
-
+            etJumlahBayar.setVisibility(View.VISIBLE);
+            tvCatatanQris.setVisibility(View.GONE);
             hitungKembalian(); // pastikan kembalian ke-hitung ulang sesuai isi etJumlahBayar
         } else {
-            btnMetodeQris.setBackgroundResource(R.drawable.bg_button_rounded);
-            btnMetodeQris.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                    android.graphics.Color.parseColor("#5149E5")));
-            btnMetodeQris.setTextColor(android.graphics.Color.WHITE);
-
-            btnMetodeTunai.setBackground(null);
-            btnMetodeTunai.setTextColor(android.graphics.Color.parseColor("#78909C"));
-
-            llInputTunai.setVisibility(View.GONE);
-            llInfoQris.setVisibility(View.VISIBLE);
+            // QRIS: input jumlah bayar tidak relevan (dianggap pas), tapi baris Kembalian
+            // TETAP ditampilkan (fixed Rp 0) supaya tinggi layout tidak jeblos ke bawah
+            // dibanding tampilan Tunai.
+            etJumlahBayar.setVisibility(View.GONE);
+            tvKembalian.setText("Rp 0");
+            tvCatatanQris.setVisibility(View.VISIBLE);
         }
+    }
+
+    // Geser indikator (kotak outline) ke tombol metode yang baru dipilih.
+    // Pola identik dengan geserIndikatorKe() di MainActivity, bedanya di sini geser
+    // horizontal (translationX + width) karena toggle-nya berdampingan, bukan bertumpuk.
+    private void geserIndikatorMetode(View target) {
+        vIndikatorMetode.animate()
+                .translationX(target.getLeft())
+                .setDuration(220)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+
+        ViewGroup.LayoutParams lp = vIndikatorMetode.getLayoutParams();
+        lp.width = target.getWidth();
+        vIndikatorMetode.setLayoutParams(lp);
     }
 
     private void prosesBayar() {

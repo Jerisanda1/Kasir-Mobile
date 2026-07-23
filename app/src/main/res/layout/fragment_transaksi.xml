@@ -293,6 +293,7 @@
                 app:cardBackgroundColor="#FFFFFF">
 
                 <LinearLayout
+                    android:id="@+id/llKontenPembayaran"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -371,7 +372,8 @@
                             android:textColor="#5149E5"/>
                     </LinearLayout>
 
-                    <!-- Pilihan Metode Pembayaran -->
+                    <!-- Pilihan Metode Pembayaran: toggle dengan indikator geser + outline,
+                         niru pola sliding indicator di sidebar (lihat MainActivity.geserIndikatorKe) -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -380,115 +382,106 @@
                         android:textColor="#78909C"
                         android:layout_marginBottom="6dp"/>
 
-                    <LinearLayout
+                    <FrameLayout
+                        android:id="@+id/flMetodeToggle"
                         android:layout_width="match_parent"
                         android:layout_height="44dp"
-                        android:orientation="horizontal"
                         android:background="@drawable/bg_toggle_container"
                         android:padding="3dp"
                         android:layout_marginBottom="12dp">
 
-                        <Button
-                            android:id="@+id/btnMetodeTunai"
+                        <!-- Indikator: digeser (translationX) ke tombol yang dipilih, lihat pilihMetodePembayaran() -->
+                        <View
+                            android:id="@+id/vIndikatorMetode"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="💵  Tunai"
-                            android:textAllCaps="false"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:minWidth="0dp"
-                            android:padding="0dp"
-                            android:stateListAnimator="@null"/>
-
-                        <Button
-                            android:id="@+id/btnMetodeQris"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:layout_marginStart="3dp"
-                            android:text="📱  QRIS"
-                            android:textAllCaps="false"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:minWidth="0dp"
-                            android:padding="0dp"
-                            android:stateListAnimator="@null"/>
-
-                    </LinearLayout>
-
-                    <!-- Input khusus Tunai: jumlah bayar + kembalian -->
-                    <LinearLayout
-                        android:id="@+id/llInputTunai"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <EditText
-                            android:id="@+id/etJumlahBayar"
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:hint="Jumlah bayar"
-                            android:inputType="numberDecimal"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:background="@drawable/edittext_rounded"
-                            android:textSize="13sp"
-                            android:textColor="#1A1A2E"
-                            android:textColorHint="#B0BEC5"
-                            android:layout_marginBottom="8dp"/>
+                            android:background="@drawable/bg_toggle_indikator"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginBottom="10dp">
-                            <TextView
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/btnMetodeTunai"
                                 android:layout_width="0dp"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:text="Kembalian"
+                                android:text="Tunai"
+                                android:textAllCaps="false"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
-                                android:textColor="#1A1A2E"/>
-                            <TextView
-                                android:id="@+id/tvKembalian"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Rp 0"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:textColor="#C62828"/>
-                        </LinearLayout>
-                    </LinearLayout>
+                                android:minWidth="0dp"
+                                android:padding="0dp"
+                                android:background="@android:color/transparent"
+                                android:stateListAnimator="@null"/>
 
-                    <!-- Info khusus QRIS: tampil gantiin input tunai kalau QRIS dipilih -->
+                            <Button
+                                android:id="@+id/btnMetodeQris"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:text="QRIS"
+                                android:textAllCaps="false"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:minWidth="0dp"
+                                android:padding="0dp"
+                                android:background="@android:color/transparent"
+                                android:stateListAnimator="@null"/>
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <!-- Input Jumlah Bayar: hanya relevan untuk Tunai, disembunyikan saat QRIS -->
+                    <EditText
+                        android:id="@+id/etJumlahBayar"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Jumlah bayar"
+                        android:inputType="numberDecimal"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:background="@drawable/edittext_rounded"
+                        android:textSize="13sp"
+                        android:textColor="#1A1A2E"
+                        android:textColorHint="#B0BEC5"
+                        android:layout_marginBottom="8dp"/>
+
+                    <!-- Kembalian: SELALU tampil baik Tunai maupun QRIS (QRIS = tetap Rp 0, pas),
+                         supaya tinggi layout tidak berubah drastis saat ganti metode -->
                     <LinearLayout
-                        android:id="@+id/llInfoQris"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:background="@drawable/bg_info_note"
-                        android:padding="12dp"
-                        android:layout_marginBottom="10dp"
-                        android:visibility="gone">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="📱"
-                            android:textSize="16sp"
-                            android:layout_marginEnd="8dp"/>
-
+                        android:layout_marginBottom="4dp">
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Pembayaran QRIS dianggap pas sesuai total, tanpa kembalian"
-                            android:textSize="12sp"
-                            android:textColor="#78909C"/>
+                            android:text="Kembalian"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="#1A1A2E"/>
+                        <TextView
+                            android:id="@+id/tvKembalian"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rp 0"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#C62828"/>
                     </LinearLayout>
+
+                    <!-- Catatan QRIS: simpel, tanpa icon, tampil cuma saat QRIS dipilih -->
+                    <TextView
+                        android:id="@+id/tvCatatanQris"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Dibayar pas via QRIS, tanpa kembalian"
+                        android:textSize="11sp"
+                        android:textColor="#78909C"
+                        android:layout_marginBottom="10dp"
+                        android:visibility="gone"/>
 
                     <Button
                         android:id="@+id/btnBayar"

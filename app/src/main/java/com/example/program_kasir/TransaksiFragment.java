@@ -645,8 +645,11 @@ public class TransaksiFragment extends Fragment {
         TextView tvKonfirmasiTotal = dialogView.findViewById(R.id.tvKonfirmasiTotal);
         TextView tvKonfirmasiBayar = dialogView.findViewById(R.id.tvKonfirmasiBayar);
         TextView tvKonfirmasiKembali = dialogView.findViewById(R.id.tvKonfirmasiKembali);
+        TextView tvMetode = dialogView.findViewById(R.id.tvMetodeKonfirmasi);
         Button btnProsesTransaksi = dialogView.findViewById(R.id.btnProsesTransaksi);
         Button btnBatalKonfirmasi = dialogView.findViewById(R.id.btnBatalKonfirmasi);
+
+        tvMetode.setText("Metode Pembayaran : " + MetodePembayaranHelper.labelSaja(metodePembayaran));
 
         tvJudulDetailProduk.setText("🛒 Detail Produk (" + daftarKeranjang.size() + " item)");
         tvKonfirmasiTotal.setText(formatRupiah(totalBayar));
@@ -754,6 +757,7 @@ public class TransaksiFragment extends Fragment {
         data.namaKasir = sessionManager.getNamaLengkap();
         data.waktu = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
         data.shift = sessionManager.getShift();
+        data.metodePembayaran = metodePembayaran;
         data.total = totalBayar;
         data.bayar = jumlahBayar;
         data.kembalian = kembalian;

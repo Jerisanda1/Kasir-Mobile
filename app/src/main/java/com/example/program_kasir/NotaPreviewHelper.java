@@ -41,6 +41,7 @@ public class NotaPreviewHelper {
         TextView tvKasir   = dialogView.findViewById(R.id.tvPreviewKasir);
         TextView tvTanggal = dialogView.findViewById(R.id.tvPreviewTanggal);
         TextView tvShift   = dialogView.findViewById(R.id.tvPreviewShift);
+        TextView tvMetode  = dialogView.findViewById(R.id.tvPreviewMetode);
         LinearLayout llItem = dialogView.findViewById(R.id.llPreviewItem);
         TextView tvTotal   = dialogView.findViewById(R.id.tvPreviewTotal);
         TextView tvBayar   = dialogView.findViewById(R.id.tvPreviewBayar);
@@ -52,6 +53,7 @@ public class NotaPreviewHelper {
         tvKasir.setText("Kasir: " + data.namaKasir);
         tvTanggal.setText("Tanggal: " + data.waktu);
         tvShift.setText("Shift: " + ("ADMIN".equalsIgnoreCase(data.shift) ? "Admin" : data.shift));
+        tvMetode.setText("Metode: " + MetodePembayaranHelper.labelSaja(data.metodePembayaran));
 
         llItem.removeAllViews();
         if (data.items != null) {

@@ -61,6 +61,21 @@
                 android:textColor="#78909C"/>
 
             <TextView
+                android:id="@+id/tvMetodeBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_box_green"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:layout_marginEnd="6dp"
+                android:text="Tunai"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="#0F6E56"/>
+
+            <TextView
                 android:id="@+id/tvShift"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

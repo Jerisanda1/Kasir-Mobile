@@ -226,6 +226,7 @@ public class PrinterHelper {
         sb.append("[L]Shift: ")
                 .append("ADMIN".equalsIgnoreCase(data.shift) ? "Admin" : "Shift " + data.shift)
                 .append("\n");
+        sb.append("[L]Metode: ").append(MetodePembayaranHelper.labelSaja(data.metodePembayaran)).append("\n");
         sb.append("\n"); // jarak kosong sebelum daftar item, TANPA garis (niru web)
 
         for (StrukItem item : data.items) {

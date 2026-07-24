@@ -19,6 +19,9 @@ public class TransaksiRiwayat {
     @SerializedName("shift")
     private String shift;
 
+    @SerializedName("metode_pembayaran")
+    private String metodePembayaran;
+
     @SerializedName("created_at")
     private String createdAt;
 
@@ -31,6 +34,7 @@ public class TransaksiRiwayat {
     public double getBayar() { return bayar; }
     public double getKembalian() { return kembalian; }
     public String getShift() { return shift; }
+    public String getMetodePembayaran() { return metodePembayaran; }
     public String getCreatedAt() { return createdAt; }
     public String getNamaKasir() { return namaKasir; }
 }

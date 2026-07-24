@@ -48,6 +48,7 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.RiwayatV
         holder.tvKodeTransaksi.setText(item.getKodeTransaksi());
         holder.tvTotal.setText("Rp " + fmt.format(item.getTotal()));
         holder.tvShift.setText("ADMIN".equalsIgnoreCase(item.getShift()) ? "Admin" : "Shift " + item.getShift());
+        MetodePembayaranHelper.terapkanBadge(holder.tvMetodeBadge, item.getMetodePembayaran());
         holder.tvBayarKembalian.setText("Bayar Rp " + fmt.format(item.getBayar())
                 + "  •  Kembali Rp " + fmt.format(item.getKembalian()));
         holder.tvWaktu.setText(formatWaktu(item.getCreatedAt()));
@@ -73,7 +74,7 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.RiwayatV
     }
 
     static class RiwayatViewHolder extends RecyclerView.ViewHolder {
-        TextView tvKodeTransaksi, tvTotal, tvWaktu, tvShift, tvBayarKembalian;
+        TextView tvKodeTransaksi, tvTotal, tvWaktu, tvShift, tvMetodeBadge, tvBayarKembalian;
         android.widget.Button btnDetail, btnCetak;
 
         public RiwayatViewHolder(@NonNull View itemView) {
@@ -82,6 +83,7 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.RiwayatV
             tvTotal           = itemView.findViewById(R.id.tvTotal);
             tvWaktu           = itemView.findViewById(R.id.tvWaktu);
             tvShift           = itemView.findViewById(R.id.tvShift);
+            tvMetodeBadge     = itemView.findViewById(R.id.tvMetodeBadge);
             tvBayarKembalian  = itemView.findViewById(R.id.tvBayarKembalian);
             btnDetail         = itemView.findViewById(R.id.btnDetail);
             btnCetak          = itemView.findViewById(R.id.btnCetak);

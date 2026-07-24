@@ -400,6 +400,7 @@ public class RiwayatFragment extends Fragment {
         data.namaKasir = sessionManager.getNamaLengkap();
         data.waktu = formatWaktuCetak(transaksi.getCreatedAt());
         data.shift = transaksi.getShift();
+        data.metodePembayaran = transaksi.getMetodePembayaran();
         data.total = transaksi.getTotal();
         data.bayar = transaksi.getBayar();
         data.kembalian = transaksi.getKembalian();
@@ -481,7 +482,10 @@ public class RiwayatFragment extends Fragment {
         TextView tvBayar       = dialogView.findViewById(R.id.tvDetailBayar);
         TextView tvKembali     = dialogView.findViewById(R.id.tvDetailKembali);
         TextView tvKasirShift  = dialogView.findViewById(R.id.tvKasirShiftDetail);
+        TextView tvMetode      = dialogView.findViewById(R.id.tvMetodeDetail);
         Button btnTutup        = dialogView.findViewById(R.id.btnTutupDetail);
+
+        tvMetode.setText("Metode Pembayaran : " + MetodePembayaranHelper.labelSaja(transaksi.getMetodePembayaran()));
 
         tvJudul.setText(transaksi.getKodeTransaksi());
         tvTanggal.setText(formatTanggalLengkap(transaksi.getCreatedAt()));

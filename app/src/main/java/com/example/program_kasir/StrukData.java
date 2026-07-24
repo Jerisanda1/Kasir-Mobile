@@ -10,6 +10,7 @@ public class StrukData {
     public String namaKasir;
     public String waktu;   // sudah dalam format teks siap cetak, misal "18/07/2026 14:30"
     public String shift;   // "1", "2", atau "ADMIN"
+    public String metodePembayaran; // "tunai" atau "qris"
     public List<StrukItem> items;
     public double total;
     public double bayar;

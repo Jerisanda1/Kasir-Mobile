@@ -4,10 +4,6 @@
     android:layout_height="wrap_content"
     android:maxHeight="600dp">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -169,6 +165,21 @@
             android:gravity="end">
 
             <Button
+                android:id="@+id/btnBatalKonfirmasi"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginEnd="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Batal"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#78909C"
+                android:background="@drawable/bg_button_rounded"
+                android:backgroundTint="#F0F1F5"
+                android:stateListAnimator="@null"/>
+
+            <Button
                 android:id="@+id/btnProsesTransaksi"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
@@ -184,22 +195,4 @@
         </LinearLayout>
 
     </LinearLayout>
-
-        <!-- Tombol tutup (X): floating di pojok kanan atas, menggantikan tombol "Batal" -->
-        <Button
-            android:id="@+id/btnBatalKonfirmasi"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="top|end"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="12dp"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="0dp"
-            android:gravity="center"
-            android:background="@drawable/bg_btn_close_bulat"
-            android:drawableTop="@drawable/ic_close"
-            android:stateListAnimator="@null"/>
-
-    </FrameLayout>
 </ScrollView>

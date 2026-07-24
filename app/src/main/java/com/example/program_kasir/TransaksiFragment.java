@@ -102,7 +102,8 @@ public class TransaksiFragment extends Fragment {
             });
 
     private EditText etSearch, etDiskon, etJumlahBayar;
-    private TextView tvSubtotal, tvDiskon, tvTotalBayar, tvKembalian, tvTanggal, tvKeranjangKosong;
+    private TextView tvSubtotal, tvDiskon, tvTotalBayar, tvKembalian, tvTanggal;
+    private LinearLayout llKeranjangKosong;
     private Button btnReset, btnBayar;
     private LinearLayout llKategori;
     private FrameLayout flMetodeToggle;
@@ -166,7 +167,7 @@ public class TransaksiFragment extends Fragment {
         tvTotalBayar      = v.findViewById(R.id.tvTotalBayar);
         tvKembalian       = v.findViewById(R.id.tvKembalian);
         tvTanggal         = v.findViewById(R.id.tvTanggal);
-        tvKeranjangKosong = v.findViewById(R.id.tvKeranjangKosong);
+        llKeranjangKosong = v.findViewById(R.id.llKeranjangKosong);
         btnReset          = v.findViewById(R.id.btnReset);
         btnBayar          = v.findViewById(R.id.btnBayar);
         llKategori        = v.findViewById(R.id.llKategori);
@@ -475,10 +476,10 @@ public class TransaksiFragment extends Fragment {
     // Menampilkan teks "Keranjang masih kosong" jika belum ada item
     private void cekKeranjangKosong() {
         if (daftarKeranjang.isEmpty()) {
-            tvKeranjangKosong.setVisibility(View.VISIBLE);
+            llKeranjangKosong.setVisibility(View.VISIBLE);
             rvKeranjang.setVisibility(View.GONE);
         } else {
-            tvKeranjangKosong.setVisibility(View.GONE);
+            llKeranjangKosong.setVisibility(View.GONE);
             rvKeranjang.setVisibility(View.VISIBLE);
         }
     }
@@ -776,7 +777,16 @@ public class TransaksiFragment extends Fragment {
                     new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
-        btnCetakNota.setOnClickListener(v -> NotaPreviewHelper.tampilkan(ctx, data, () -> mintaIzinLaluCetak(data)));
+        btnCetakNota.setOnClickListener(v -> NotaPreviewHelper.tampilkan(ctx, data,
+                () -> mintaIzinLaluCetak(data),
+                () -> {
+                    // Klik Batal/Tutup di preview: jangan balik ke modal "Pembayaran Berhasil"
+                    // yang masih terbuka di belakang -- langsung tutup dialog itu juga, lalu
+                    // reset transaksi persis seperti tombol "Transaksi Baru".
+                    dialog.dismiss();
+                    resetForm();
+                    siapkanDataProduk();
+                }));
 
         btnTransaksiBaru.setOnClickListener(v -> {
             dialog.dismiss();
@@ -785,6 +795,16 @@ public class TransaksiFragment extends Fragment {
         });
 
         dialog.show();
+
+        // Batasi lebar dialog secara eksplisit SETELAH show(). Tanpa ini, AlertDialog di
+        // tablet melebar mengikuti layar (jadi kelihatan seperti persegi panjang lebar),
+        // padahal tingginya cuma segitu (ilustrasi + judul + subjudul + tombol). Dengan
+        // lebar dibatasi ~340dp, proporsinya jadi mendekati persegi.
+        if (dialog.getWindow() != null) {
+            float density = ctx.getResources().getDisplayMetrics().density;
+            int lebarPx = Math.round(340 * density);
+            dialog.getWindow().setLayout(lebarPx, android.view.WindowManager.LayoutParams.WRAP_CONTENT);
+        }
     }
 
     // Cek izin Bluetooth dulu sebelum benar-benar cetak; kalau belum ada, minta izin dulu

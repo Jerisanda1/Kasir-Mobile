@@ -228,16 +228,32 @@
                             android:padding="14dp"
                             android:clipToPadding="false"/>
 
-                        <TextView
-                            android:id="@+id/tvKeranjangKosong"
+                        <LinearLayout
+                            android:id="@+id/llKeranjangKosong"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="Keranjang masih kosong"
-                            android:textSize="13sp"
-                            android:textColor="#78909C"
+                            android:orientation="vertical"
                             android:gravity="center"
-                            android:padding="20dp"/>
+                            android:padding="20dp">
+
+                            <ImageView
+                                android:layout_width="90dp"
+                                android:layout_height="90dp"
+                                android:src="@drawable/no_data"
+                                android:alpha="0.4"
+                                android:layout_marginBottom="10dp"
+                                android:contentDescription="Keranjang kosong"/>
+
+                            <TextView
+                                android:id="@+id/tvKeranjangKosong"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Keranjang masih kosong"
+                                android:textSize="12sp"
+                                android:textColor="#78909C"
+                                android:gravity="center"/>
+                        </LinearLayout>
 
                     </FrameLayout>
 

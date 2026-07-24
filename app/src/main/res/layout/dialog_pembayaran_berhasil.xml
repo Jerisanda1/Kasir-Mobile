@@ -7,19 +7,13 @@
     android:padding="28dp"
     android:gravity="center">
 
-    <FrameLayout
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:background="@drawable/bg_lingkaran_sukses"
-        android:layout_marginBottom="16dp">
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_check"
-            android:contentDescription="Pembayaran berhasil"/>
-    </FrameLayout>
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/konfirm"
+        android:alpha="0.4"
+        android:layout_marginBottom="12dp"
+        android:contentDescription="Pembayaran berhasil"/>
 
     <TextView
         android:layout_width="wrap_content"

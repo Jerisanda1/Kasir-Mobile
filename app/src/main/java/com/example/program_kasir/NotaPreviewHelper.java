@@ -22,7 +22,17 @@ public class NotaPreviewHelper {
         void cetakSekarang();
     }
 
+    public interface OnBatalPreview {
+        void batal();
+    }
+
+    // Overload lama: dipakai RiwayatFragment, yang gak butuh aksi khusus saat Batal
+    // (cukup tutup dialog preview-nya saja, gak perlu reset apa-apa).
     public static void tampilkan(Context ctx, StrukData data, OnKonfirmasiCetak aksiCetak) {
+        tampilkan(ctx, data, aksiCetak, null);
+    }
+
+    public static void tampilkan(Context ctx, StrukData data, OnKonfirmasiCetak aksiCetak, OnBatalPreview aksiBatal) {
         NumberFormat fmt = NumberFormat.getInstance(new Locale("id", "ID"));
 
         View dialogView = LayoutInflater.from(ctx).inflate(R.layout.dialog_preview_nota, null);
@@ -76,7 +86,10 @@ public class NotaPreviewHelper {
             dialog.dismiss();
             if (aksiCetak != null) aksiCetak.cetakSekarang();
         });
-        btnTutup.setOnClickListener(v -> dialog.dismiss());
+        btnTutup.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (aksiBatal != null) aksiBatal.batal();
+        });
 
         dialog.show();
 

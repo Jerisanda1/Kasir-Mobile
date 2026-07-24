@@ -7,16 +7,19 @@
     android:padding="28dp"
     android:gravity="center">
 
-    <TextView
+    <FrameLayout
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:background="@drawable/bg_box_green"
-        android:gravity="center"
-        android:text="✓"
-        android:textColor="#0F6E56"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:background="@drawable/bg_lingkaran_sukses"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_check"
+            android:contentDescription="Pembayaran berhasil"/>
+    </FrameLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -47,10 +50,11 @@
             android:layout_height="52dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:text="🖨 Cetak Nota"
+            android:text="Cetak Nota"
             android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="#5149E5"
+            android:background="@drawable/bg_button_rounded"
             android:backgroundTint="#E3E8FD"
             android:stateListAnimator="@null"/>
 
@@ -63,6 +67,7 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
+            android:background="@drawable/bg_button_rounded"
             android:backgroundTint="#5149E5"
             android:stateListAnimator="@null"/>
     </LinearLayout>

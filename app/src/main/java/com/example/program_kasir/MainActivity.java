@@ -166,14 +166,9 @@ public class MainActivity extends AppCompatActivity {
         String shift = sessionManager.getShift();
 
         String levelLabel = "kasir".equalsIgnoreCase(level) ? "Kasir" : "Admin";
-        String subTeks;
-
-        if (shift != null && !shift.isEmpty()) {
-            String jamShift = "1".equals(shift) ? "07:00-15:00" : "15:00-23:00";
-            subTeks = levelLabel + " - Shift " + shift + " (" + jamShift + ")";
-        } else {
-            subTeks = levelLabel;
-        }
+        String subTeks = (shift != null && !shift.isEmpty())
+                ? levelLabel + " - Shift " + shift
+                : levelLabel;
 
         tvNamaKasirSidebar.setText(nama);
         tvRoleShiftSidebar.setText(subTeks);

@@ -37,8 +37,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                android:textColor="#78909C"
-                android:textSize="12sp" />
+                android:textColor="#5149E5"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:background="@drawable/bg_button_rounded"
+                android:backgroundTint="#EEF0FB" />
 
         </LinearLayout>
 
@@ -195,17 +202,19 @@
                         <Button
                             android:id="@+id/btnReset"
                             android:layout_width="wrap_content"
-                            android:layout_height="40dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:minWidth="0dp"
                             android:minHeight="0dp"
-                            android:paddingHorizontal="16dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="0dp"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp"
                             android:text="Reset"
-                            android:textSize="11sp"
+                            android:textSize="12sp"
                             android:textStyle="bold"
                             android:textColor="#5149E5"
-                            android:background="@drawable/bg_button_rounded"
-                            android:backgroundTint="#EEF0FB"
+                            android:background="@android:color/transparent"
                             android:stateListAnimator="@null"/>
                     </LinearLayout>
 

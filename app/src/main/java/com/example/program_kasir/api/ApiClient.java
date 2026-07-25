@@ -11,7 +11,7 @@ public class ApiClient {
     //public static final String BASE_URL = "http://10.0.2.2/casirku/api/";
 
     // HP fisik
-     public static final String BASE_URL = "http://10.87.205.216/casirku/api/";
+     public static final String BASE_URL = "http://10.200.203.216/casirku/api/";
 
     private static Retrofit retrofit;
 

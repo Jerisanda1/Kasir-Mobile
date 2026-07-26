@@ -58,7 +58,8 @@ public class RiwayatFragment extends Fragment {
     private RecyclerView rvRiwayat;
     private RiwayatAdapter riwayatAdapter;
 
-    private EditText etSearch, etTanggal;
+    private EditText etSearch;
+    private TextView etTanggal;
     private Button btnReset, btnPrevHalaman, btnNextHalaman;
     private LinearLayout llKosong, llNomorHalamanContainer;
     private ProgressBar progressBar;

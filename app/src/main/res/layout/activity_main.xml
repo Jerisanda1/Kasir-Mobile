@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -81,6 +82,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/shooping_card"
+                        android:contentDescription="@null"
                         app:tint="#FFFFFF"/>
 
                     <TextView
@@ -107,6 +109,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/receipt_long_24px"
+                        android:contentDescription="@null"
                         app:tint="#000000"/>
 
                     <TextView
@@ -186,7 +189,8 @@
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:contentDescription="Akhiri shift"/>
+                android:contentDescription="Akhiri shift"
+                tools:ignore="TouchTargetSizeCheck"/>
 
         </LinearLayout>
 

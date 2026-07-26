@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="4dp"
@@ -80,7 +81,9 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="5dp"
             android:src="@drawable/remove_24px"
-            app:tint="#5149E5"/>
+            android:contentDescription="Kurangi jumlah"
+            app:tint="#5149E5"
+            tools:ignore="TouchTargetSizeCheck"/>
 
         <TextView
             android:id="@+id/tvJumlahItem"
@@ -99,7 +102,9 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="5dp"
             android:src="@drawable/add_24px"
-            app:tint="#5149E5"/>
+            android:contentDescription="Tambah jumlah"
+            app:tint="#5149E5"
+            tools:ignore="TouchTargetSizeCheck"/>
 
     </LinearLayout>
 
@@ -112,6 +117,8 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="5dp"
         android:src="@drawable/delete_24px"
-        app:tint="#E53935"/>
+        android:contentDescription="Hapus produk dari keranjang"
+        app:tint="#E53935"
+        tools:ignore="TouchTargetSizeCheck"/>
 
 </LinearLayout>

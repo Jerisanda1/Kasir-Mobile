@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -87,7 +88,8 @@
                 android:layout_marginEnd="8dp"
                 android:gravity="center_vertical"
                 android:drawableEnd="@drawable/ic_calendar"
-                android:drawablePadding="6dp"/>
+                android:drawablePadding="6dp"
+                android:contentDescription="Pilih tanggal untuk filter riwayat"/>
 
             <Button
                 android:id="@+id/btnReset"
@@ -202,7 +204,8 @@
                 android:textStyle="bold"
                 android:textColor="#1A1A2E"
                 android:background="@android:color/transparent"
-                android:stateListAnimator="@null"/>
+                android:stateListAnimator="@null"
+                tools:ignore="TouchTargetSizeCheck"/>
 
             <!-- Container dinamis untuk menampung nomor halaman (1 2 3 dst) -->
             <LinearLayout
@@ -225,7 +228,8 @@
                 android:textStyle="bold"
                 android:textColor="#1A1A2E"
                 android:background="@android:color/transparent"
-                android:stateListAnimator="@null"/>
+                android:stateListAnimator="@null"
+                tools:ignore="TouchTargetSizeCheck"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

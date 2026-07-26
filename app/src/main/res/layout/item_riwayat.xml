@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
@@ -125,7 +126,8 @@
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:background="@drawable/bg_btn_riwayat_orange"
-                android:stateListAnimator="@null"/>
+                android:stateListAnimator="@null"
+                tools:ignore="TouchTargetSizeCheck"/>
 
             <Button
                 android:id="@+id/btnDetail"
@@ -139,7 +141,8 @@
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:background="@drawable/bg_btn_riwayat_primary"
-                android:stateListAnimator="@null"/>
+                android:stateListAnimator="@null"
+                tools:ignore="TouchTargetSizeCheck"/>
         </LinearLayout>
 
     </LinearLayout>

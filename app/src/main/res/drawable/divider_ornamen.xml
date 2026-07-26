@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="240dp"
+    android:height="10dp"
+    android:viewportWidth="320"
+    android:viewportHeight="16">
+
+    <!-- Segmen kiri: pendek, tipis rata -->
+    <path
+        android:fillColor="#B0BEC5"
+        android:pathData="M10,7L50,7L50,9L10,9Z"/>
+
+    <!-- Segmen tengah: panjang, bentuk lensa (tipis di kedua ujung, menebal di tengah) -->
+    <path
+        android:fillColor="#B0BEC5"
+        android:pathData="M70,8 C100,8 125,3 160,3 C195,3 220,8 250,8 C220,8 195,13 160,13 C125,13 100,8 70,8Z"/>
+
+    <!-- Segmen kanan: pendek, tipis rata (mirror dari kiri) -->
+    <path
+        android:fillColor="#B0BEC5"
+        android:pathData="M270,7L310,7L310,9L270,9Z"/>
+</vector>

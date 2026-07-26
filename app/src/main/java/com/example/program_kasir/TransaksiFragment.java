@@ -196,8 +196,15 @@ public class TransaksiFragment extends Fragment {
         produkAdapter = new ProdukAdapter(daftarProdukTampil, this::tambahKeKeranjang);
         rvProduk.setAdapter(produkAdapter);
 
-        // List keranjang vertikal, dibatasi tinggi via XML agar muncul scroll
-        rvKeranjang.setLayoutManager(new LinearLayoutManager(requireContext()));
+        // List keranjang vertikal
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
+        rvKeranjang.setLayoutManager(layoutManager);
+
+        rvKeranjang.setItemAnimator(null);
+        rvKeranjang.setHasFixedSize(false);
+        rvKeranjang.setFocusable(false);
+        rvKeranjang.setFocusableInTouchMode(false);
+
         keranjangAdapter = new KeranjangAdapter(daftarKeranjang, new KeranjangAdapter.OnKeranjangActionListener() {
             @Override
             public void onTambahQty(int position) {
@@ -263,6 +270,36 @@ public class TransaksiFragment extends Fragment {
                 if (posisiDiGrid != -1) produkAdapter.notifyItemChanged(posisiDiGrid);
 
                 cekKeranjangKosong();
+                hitungOtomatis();
+            }
+
+            @Override
+            public void onManualQtyChange(int position, int newQty) {
+                if (position == RecyclerView.NO_POSITION || position >= daftarKeranjang.size()) return;
+
+                ItemKeranjang item = daftarKeranjang.get(position);
+                Produk produk = item.getProduk();
+                int selisih = newQty - item.getJumlah();
+
+                if (selisih > 0) {
+                    // Ingin menambah jumlah, cek stok
+                    if (produk.getStok() < selisih) {
+                        Toast.makeText(requireContext(),
+                                "Stok " + produk.getNama() + " tidak mencukupi", Toast.LENGTH_SHORT).show();
+                        keranjangAdapter.notifyItemChanged(position);
+                        return;
+                    }
+                    produk.kurangiStok(selisih);
+                } else if (selisih < 0) {
+                    // Mengurangi jumlah, kembalikan stok
+                    produk.tambahStok(Math.abs(selisih));
+                }
+
+                item.setJumlah(newQty);
+                
+                int posisiDiGrid = daftarProdukTampil.indexOf(produk);
+                if (posisiDiGrid != -1) produkAdapter.notifyItemChanged(posisiDiGrid);
+
                 hitungOtomatis();
             }
         });

@@ -38,15 +38,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                android:textColor="#5149E5"
-                android:textSize="12sp"
-                android:textStyle="bold"
+                android:textColor="#1B1A1A"
+                android:textSize="14sp"
+                android:textStyle="bold|normal"
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
-                android:background="@drawable/bg_button_rounded"
-                android:backgroundTint="#EEF0FB" />
+                android:background="@drawable/bg_button_rounded"/>
 
         </LinearLayout>
 

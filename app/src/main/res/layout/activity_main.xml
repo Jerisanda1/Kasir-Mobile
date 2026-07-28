@@ -43,18 +43,11 @@
 
         </LinearLayout>
 
-        <!-- Garis pemisah -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
-
         <!-- ===== Kontainer menu: indikator aktif (kotak ungu) + 2 menu di atasnya ===== -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="8dp">
 
             <View

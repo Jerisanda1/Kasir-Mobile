@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                android:textColor="#1B1A1A"
+                android:textColor="#4E4E54"
                 android:textSize="14sp"
                 android:textStyle="bold|normal"
                 android:paddingStart="14dp"
@@ -142,12 +142,6 @@
 
                     </LinearLayout>
 
-                    <!-- Garis pemisah -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#ECEFF1"/>
-
                     <!-- Daftar Produk -->
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvProduk"
@@ -188,7 +182,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="6dp">
 
                         <TextView
                             android:layout_width="0dp"
@@ -218,12 +215,6 @@
                             android:stateListAnimator="@null"
                             tools:ignore="TouchTargetSizeCheck"/>
                     </LinearLayout>
-
-                    <!-- Garis pemisah -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#ECEFF1"/>
 
                     <!-- Isi Keranjang -->
                     <FrameLayout

@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Professional Box Icon with Bold Stroke -->
+    <path
+        android:pathData="M3,6L12,3L21,6L21,18L12,21L3,18L3,6Z"
+        android:strokeWidth="2.0"
+        android:strokeColor="#5149E5"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+    <path
+        android:pathData="M12,21L12,11.5"
+        android:strokeWidth="2.0"
+        android:strokeColor="#5149E5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+    <path
+        android:pathData="M12,11.5L21,8.5"
+        android:strokeWidth="2.0"
+        android:strokeColor="#5149E5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+    <path
+        android:pathData="M12,11.5L3,8.5"
+        android:strokeWidth="2.0"
+        android:strokeColor="#5149E5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+</vector>

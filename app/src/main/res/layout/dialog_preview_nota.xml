@@ -249,15 +249,6 @@
                 android:textColor="#78909C"
                 android:gravity="center"
                 android:layout_marginTop="4dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="*** Barang yang sudah dibeli tidak dapat ditukar ***"
-                android:textSize="10sp"
-                android:fontFamily="monospace"
-                android:textColor="#78909C"
-                android:gravity="center"/>
         </LinearLayout>
         </LinearLayout>
 

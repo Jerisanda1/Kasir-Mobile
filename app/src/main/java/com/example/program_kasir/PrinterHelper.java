@@ -242,7 +242,6 @@ public class PrinterHelper {
         sb.append("[C]").append(garis).append("\n");
 
         sb.append("[C]Terima kasih atas kunjungannya\n");
-        sb.append("[C]*** Barang yang sudah dibeli tidak dapat ditukar ***\n");
         sb.append("\n\n");
 
         return sb.toString();

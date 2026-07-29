@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp">
+    android:padding="8dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:id="@+id/cardProduk"
@@ -62,6 +65,20 @@
             android:textColor="#78909C"/>
 
     </LinearLayout>
+
+    <!-- Tombol Tambah (Indikator Interaktif) -->
+    <ImageView
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="-4dp"
+        android:layout_marginBottom="-4dp"
+        android:background="@drawable/bg_circle_add_yellow"
+        android:src="@drawable/ic_add_small_24px"
+        android:padding="7dp"
+        android:elevation="4dp"
+        android:contentDescription="Tambah ke keranjang"
+        app:tint="#FFFFFF"/>
 
     <!-- Badge status (Kadaluarsa / Stok Habis), pill kecil di pojok kanan atas -->
     <TextView

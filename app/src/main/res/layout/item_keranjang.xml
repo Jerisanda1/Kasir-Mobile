@@ -85,15 +85,20 @@
             app:tint="#5149E5"
             tools:ignore="TouchTargetSizeCheck"/>
 
-        <TextView
-            android:id="@+id/tvJumlahItem"
-            android:layout_width="24dp"
-            android:layout_height="wrap_content"
+        <EditText
+            android:id="@+id/etJumlahItem"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
             android:gravity="center"
+            android:inputType="number"
+            android:imeOptions="actionDone"
+            android:selectAllOnFocus="true"
             android:text="3"
             android:textColor="#202124"
-            android:textSize="12sp"
-            android:textStyle="bold"/>
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:ignore="TouchTargetSizeCheck"/>
 
         <ImageButton
             android:id="@+id/btnTambah"

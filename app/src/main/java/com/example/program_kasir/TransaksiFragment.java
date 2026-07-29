@@ -226,40 +226,58 @@ public class TransaksiFragment extends Fragment {
         keranjangAdapter = new KeranjangAdapter(daftarKeranjang, new KeranjangAdapter.OnKeranjangActionListener() {
             @Override
             public void onTambahQty(int position) {
+                if (position < 0 || position >= daftarKeranjang.size()) return;
                 ItemKeranjang item = daftarKeranjang.get(position);
 
-                // Cegah qty melebihi stok yang tersedia
                 if (item.getJumlah() + 1 > item.getProduk().getStok()) {
                     Toast.makeText(requireContext(),
-                            "Stok " + item.getProduk().getNama() + " tidak mencukupi (sisa "
-                                    + item.getProduk().getStok() + ")", Toast.LENGTH_SHORT).show();
+                            "Stok " + item.getProduk().getNama() + " tidak mencukupi", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 item.setJumlah(item.getJumlah() + 1);
-                keranjangAdapter.notifyItemChanged(position);
+                safeNotifyItemChanged(position);
                 hitungOtomatis();
             }
+
             @Override
             public void onKurangQty(int position) {
+                if (position < 0 || position >= daftarKeranjang.size()) return;
                 ItemKeranjang item = daftarKeranjang.get(position);
                 if (item.getJumlah() > 1) {
                     item.setJumlah(item.getJumlah() - 1);
-                    keranjangAdapter.notifyItemChanged(position);
+                    safeNotifyItemChanged(position);
                 } else {
                     daftarKeranjang.remove(position);
-                    keranjangAdapter.notifyItemRemoved(position);
+                    safeNotifyItemRemoved(position);
                     cekKeranjangKosong();
                 }
                 hitungOtomatis();
             }
 
-            // BARU: hapus item langsung dari keranjang, berapa pun jumlahnya
             @Override
             public void onHapusItem(int position) {
+                if (position < 0 || position >= daftarKeranjang.size()) return;
                 daftarKeranjang.remove(position);
-                keranjangAdapter.notifyItemRemoved(position);
+                safeNotifyItemRemoved(position);
                 cekKeranjangKosong();
+                hitungOtomatis();
+            }
+
+            @Override
+            public void onUbahQtyManual(int position, int newQty) {
+                if (position < 0 || position >= daftarKeranjang.size()) return;
+                ItemKeranjang item = daftarKeranjang.get(position);
+
+                if (newQty > item.getProduk().getStok()) {
+                    Toast.makeText(requireContext(),
+                            "Stok tidak mencukupi, diset ke maksimal", Toast.LENGTH_SHORT).show();
+                    item.setJumlah(item.getProduk().getStok());
+                } else {
+                    item.setJumlah(newQty);
+                }
+
+                safeNotifyItemChanged(position);
                 hitungOtomatis();
             }
         });
@@ -481,6 +499,23 @@ public class TransaksiFragment extends Fragment {
         } else {
             llKeranjangKosong.setVisibility(View.GONE);
             rvKeranjang.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // Metode helper untuk update RecyclerView secara aman (mencegah crash saat spam klik)
+    private void safeNotifyItemChanged(int position) {
+        if (rvKeranjang.isComputingLayout()) {
+            rvKeranjang.post(() -> keranjangAdapter.notifyItemChanged(position));
+        } else {
+            keranjangAdapter.notifyItemChanged(position);
+        }
+    }
+
+    private void safeNotifyItemRemoved(int position) {
+        if (rvKeranjang.isComputingLayout()) {
+            rvKeranjang.post(() -> keranjangAdapter.notifyItemRemoved(position));
+        } else {
+            keranjangAdapter.notifyItemRemoved(position);
         }
     }
 

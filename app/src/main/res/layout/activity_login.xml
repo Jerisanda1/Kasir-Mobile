@@ -148,7 +148,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="16dp"
-                        android:src="@drawable/visibility_24px"
+                        android:src="@drawable/visibility_off_24px"
                         android:contentDescription="Tampilkan Password"
                         android:clickable="true"
                         android:focusable="true"
@@ -169,27 +169,32 @@
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
-                <!-- Teks Daftar -->
+                <!-- Info Box: Hubungi Admin -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:background="@drawable/bg_info_note"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_info_inverted"
+                        android:layout_marginEnd="8dp"
+                        android:contentDescription="Icon Info"
+                        app:tint="#78909C"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Belum punya akun? "
+                        android:text="Jika Anda belum memiliki akun, silakan hubungi admin."
                         android:textColor="#78909C"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvDaftar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hubungi Admin"
-                        android:textColor="#5149E5"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textSize="12sp"
+                        android:gravity="center"
+                        android:lineSpacingExtra="2dp"
+                        tools:ignore="HardcodedText" />
                 </LinearLayout>
 
             </LinearLayout>

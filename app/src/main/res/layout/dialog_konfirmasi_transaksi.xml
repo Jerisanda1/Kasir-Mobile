@@ -1,207 +1,240 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:maxHeight="600dp">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/bg_dialog_putih"
-        android:padding="24dp">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Konfirmasi Transaksi"
-            android:textSize="19sp"
-            android:textStyle="bold"
-            android:textColor="#1A1A2E"
-            android:gravity="center"
-            android:layout_marginBottom="16dp"/>
+        android:maxHeight="600dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_info_note"
-            android:padding="14dp"
-            android:layout_marginBottom="14dp">
+            android:background="@drawable/bg_dialog_putih"
+            android:padding="24dp">
 
             <TextView
-                android:id="@+id/tvJudulDetailProduk"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🛒 Detail Produk (0 item)"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:textColor="#1A1A2E"
-                android:layout_marginBottom="10dp"/>
-
-            <LinearLayout
-                android:id="@+id/llDaftarItemKonfirmasi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:text="Konfirmasi Transaksi"
+                android:textSize="19sp"
+                android:textStyle="bold"
+                android:textColor="#1A1A2E"
+                android:gravity="center"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_info_note"
+                android:padding="14dp"
+                android:layout_marginBottom="14dp">
+
+                <TextView
+                    android:id="@+id/tvJudulDetailProduk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🛒 Detail Produk (0 item)"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="#1A1A2E"
+                    android:layout_marginBottom="10dp"/>
+
+                <LinearLayout
+                    android:id="@+id/llDaftarItemKonfirmasi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvMetodeKonfirmasi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Metode Pembayaran : Tunai"
+                android:textSize="12sp"
+                android:textColor="#78909C"
+                android:layout_marginBottom="14dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_box_blue"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TOTAL"
+                        android:textSize="10sp"
+                        android:textColor="#5149E5"/>
+
+                    <TextView
+                        android:id="@+id/tvKonfirmasiTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp 0"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="#5149E5"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_box_green"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BAYAR"
+                        android:textSize="10sp"
+                        android:textColor="#0F6E56"/>
+
+                    <TextView
+                        android:id="@+id/tvKonfirmasiBayar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp 0"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="#0F6E56"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_box_red"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KEMBALI"
+                        android:textSize="10sp"
+                        android:textColor="#C62828"/>
+
+                    <TextView
+                        android:id="@+id/tvKonfirmasiKembali"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp 0"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="#C62828"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_info_note"
+                android:padding="12dp"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ℹ️"
+                    android:textSize="13sp"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Pastikan semua data sudah benar sebelum melanjutkan"
+                    android:textSize="11sp"
+                    android:textColor="#78909C"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end">
+
+                <Button
+                    android:id="@+id/btnBatalKonfirmasi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="10dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="Batal"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#78909C"
+                    android:background="@drawable/bg_button_rounded"
+                    android:backgroundTint="#F0F1F5"
+                    android:stateListAnimator="@null"/>
+
+                <Button
+                    android:id="@+id/btnProsesTransaksi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:paddingStart="28dp"
+                    android:paddingEnd="28dp"
+                    android:text="Proses Transaksi"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/bg_button_rounded"
+                    android:backgroundTint="#0F6E56"
+                    android:stateListAnimator="@null"/>
+            </LinearLayout>
+
         </LinearLayout>
+    </ScrollView>
+
+    <!-- Loading Overlay -->
+    <LinearLayout
+        android:id="@+id/llLoadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B3FFFFFF"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:indeterminateTint="#5149E5"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
-            android:id="@+id/tvMetodeKonfirmasi"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Metode Pembayaran : Tunai"
-            android:textSize="12sp"
-            android:textColor="#78909C"
-            android:layout_marginBottom="14dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="14dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@drawable/bg_box_blue"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TOTAL"
-                    android:textSize="10sp"
-                    android:textColor="#5149E5"/>
-
-                <TextView
-                    android:id="@+id/tvKonfirmasiTotal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rp 0"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="#5149E5"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@drawable/bg_box_green"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="BAYAR"
-                    android:textSize="10sp"
-                    android:textColor="#0F6E56"/>
-
-                <TextView
-                    android:id="@+id/tvKonfirmasiBayar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rp 0"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="#0F6E56"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@drawable/bg_box_red"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KEMBALI"
-                    android:textSize="10sp"
-                    android:textColor="#C62828"/>
-
-                <TextView
-                    android:id="@+id/tvKonfirmasiKembali"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rp 0"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="#C62828"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_info_note"
-            android:padding="12dp"
-            android:layout_marginBottom="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ℹ️"
-                android:textSize="13sp"
-                android:layout_marginEnd="8dp"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Pastikan semua data sudah benar sebelum melanjutkan"
-                android:textSize="11sp"
-                android:textColor="#78909C"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="end">
-
-            <Button
-                android:id="@+id/btnBatalKonfirmasi"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_marginEnd="10dp"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:text="Batal"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#78909C"
-                android:background="@drawable/bg_button_rounded"
-                android:backgroundTint="#F0F1F5"
-                android:stateListAnimator="@null"/>
-
-            <Button
-                android:id="@+id/btnProsesTransaksi"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:paddingStart="28dp"
-                android:paddingEnd="28dp"
-                android:text="Proses Transaksi"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="@drawable/bg_button_rounded"
-                android:backgroundTint="#0F6E56"
-                android:stateListAnimator="@null"/>
-        </LinearLayout>
-
+            android:text="Memproses Transaksi..."
+            android:textColor="#1A1A2E"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
     </LinearLayout>
-</ScrollView>
+
+</FrameLayout>

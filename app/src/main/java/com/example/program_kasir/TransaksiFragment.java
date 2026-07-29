@@ -681,8 +681,11 @@ public class TransaksiFragment extends Fragment {
         }
 
         btnProsesTransaksi.setOnClickListener(v -> {
-            dialog.dismiss();
-            kirimTransaksiKeServer(jumlahBayar, kembalian);
+            // Tampilkan loading overlay di atas modal konfirmasi yang sama
+            View llLoading = dialogView.findViewById(R.id.llLoadingOverlay);
+            if (llLoading != null) llLoading.setVisibility(View.VISIBLE);
+
+            kirimTransaksiKeServer(jumlahBayar, kembalian, dialog);
         });
         btnBatalKonfirmasi.setOnClickListener(v -> dialog.dismiss());
 
@@ -690,7 +693,7 @@ public class TransaksiFragment extends Fragment {
     }
 
     // BARU: baru di sini transaksi beneran dikirim ke API, dipanggil setelah user tekan "Proses Transaksi"
-    private void kirimTransaksiKeServer(double jumlahBayar, double kembalian) {
+    private void kirimTransaksiKeServer(double jumlahBayar, double kembalian, AlertDialog dialogKonfirmasi) {
         List<CartItem> cartItems = new ArrayList<>();
         for (ItemKeranjang item : daftarKeranjang) {
             cartItems.add(new CartItem(
@@ -702,20 +705,21 @@ public class TransaksiFragment extends Fragment {
 
         TransaksiRequest request = new TransaksiRequest(cartItems, totalBayar, jumlahBayar, kembalian, metodePembayaran);
 
-        btnBayar.setEnabled(false);
-        btnBayar.setText("Memproses...");
-
         apiService.checkout(sessionManager.getBearerToken(), request)
                 .enqueue(new Callback<TransaksiResponse>() {
                     @Override
                     public void onResponse(Call<TransaksiResponse> call, Response<TransaksiResponse> response) {
                         if (!isAdded()) return;
-                        btnBayar.setEnabled(true);
-                        btnBayar.setText("Bayar");
 
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            // Tutup modal konfirmasi hanya setelah sukses
+                            if (dialogKonfirmasi != null) dialogKonfirmasi.dismiss();
                             tampilkanDialogSukses(response.body().getKodeTransaksi(), jumlahBayar, kembalian);
                         } else {
+                            // Jika gagal, sembunyikan loading agar user bisa coba lagi atau batal
+                            View llLoading = dialogKonfirmasi.findViewById(R.id.llLoadingOverlay);
+                            if (llLoading != null) llLoading.setVisibility(View.GONE);
+
                             String pesan = "Transaksi gagal diproses";
                             if (response.body() != null && response.body().getMessage() != null) {
                                 pesan = response.body().getMessage();
@@ -731,8 +735,11 @@ public class TransaksiFragment extends Fragment {
                     @Override
                     public void onFailure(Call<TransaksiResponse> call, Throwable t) {
                         if (!isAdded()) return;
-                        btnBayar.setEnabled(true);
-                        btnBayar.setText("Bayar");
+
+                        // Sembunyikan loading jika error network
+                        View llLoading = dialogKonfirmasi.findViewById(R.id.llLoadingOverlay);
+                        if (llLoading != null) llLoading.setVisibility(View.GONE);
+
                         Toast.makeText(requireContext(),
                                 "Gagal terhubung ke server: " + t.getMessage(),
                                 Toast.LENGTH_LONG).show();

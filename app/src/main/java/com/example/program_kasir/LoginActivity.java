@@ -53,14 +53,16 @@ public class LoginActivity extends AppCompatActivity {
             etPassword.setTransformationMethod(
                     PasswordTransformationMethod.getInstance());
 
-            ivShowPassword.setImageResource(R.drawable.visibility_24px);
+            // Saat password tersembunyi (kembali ke dots), tampilkan ikon mata dicoret
+            ivShowPassword.setImageResource(R.drawable.visibility_off_24px);
 
             passwordVisible = false;
         } else {
             etPassword.setTransformationMethod(
                     HideReturnsTransformationMethod.getInstance());
 
-            ivShowPassword.setImageResource(R.drawable.visibility_off_24px);
+            // Saat password terlihat (teks asli), tampilkan ikon mata terbuka
+            ivShowPassword.setImageResource(R.drawable.visibility_24px);
 
             passwordVisible = true;
         }

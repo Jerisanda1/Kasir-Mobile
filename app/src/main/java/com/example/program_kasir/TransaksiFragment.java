@@ -268,17 +268,23 @@ public class TransaksiFragment extends Fragment {
             public void onUbahQtyManual(int position, int newQty) {
                 if (position < 0 || position >= daftarKeranjang.size()) return;
                 ItemKeranjang item = daftarKeranjang.get(position);
+                int qtyLama = item.getJumlah();
+                int qtyBaru = newQty;
 
                 if (newQty > item.getProduk().getStok()) {
                     Toast.makeText(requireContext(),
                             "Stok tidak mencukupi, diset ke maksimal", Toast.LENGTH_SHORT).show();
-                    item.setJumlah(item.getProduk().getStok());
-                } else {
-                    item.setJumlah(newQty);
+                    qtyBaru = item.getProduk().getStok();
                 }
 
-                safeNotifyItemChanged(position);
-                hitungOtomatis();
+                if (qtyBaru != qtyLama) {
+                    item.setJumlah(qtyBaru);
+                    safeNotifyItemChanged(position);
+                    hitungOtomatis();
+                } else {
+                    // Meskipun angka sama, paksa update teks di EditText agar tidak tertinggal state lama
+                    safeNotifyItemChanged(position);
+                }
             }
         });
         rvKeranjang.setAdapter(keranjangAdapter);

@@ -58,9 +58,18 @@ public class KeranjangAdapter extends RecyclerView.Adapter<KeranjangAdapter.Kera
         holder.etJumlahItem.setText(String.valueOf(item.getJumlah()));
         holder.isBinding = false;
 
-        holder.btnTambah.setOnClickListener(v -> listener.onTambahQty(holder.getAdapterPosition()));
-        holder.btnKurang.setOnClickListener(v -> listener.onKurangQty(holder.getAdapterPosition()));
-        holder.btnHapusItem.setOnClickListener(v -> listener.onHapusItem(holder.getAdapterPosition()));
+        holder.btnTambah.setOnClickListener(v -> {
+            holder.etJumlahItem.clearFocus();
+            listener.onTambahQty(holder.getAdapterPosition());
+        });
+        holder.btnKurang.setOnClickListener(v -> {
+            holder.etJumlahItem.clearFocus();
+            listener.onKurangQty(holder.getAdapterPosition());
+        });
+        holder.btnHapusItem.setOnClickListener(v -> {
+            holder.etJumlahItem.clearFocus();
+            listener.onHapusItem(holder.getAdapterPosition());
+        });
 
         // Handle enter key atau tombol "Done" pada keyboard
         holder.etJumlahItem.setOnEditorActionListener((v, actionId, event) -> {
@@ -85,23 +94,26 @@ public class KeranjangAdapter extends RecyclerView.Adapter<KeranjangAdapter.Kera
         int pos = holder.getAdapterPosition();
         if (pos == RecyclerView.NO_POSITION) return;
 
+        ItemKeranjang currentItem = daftarKeranjang.get(pos);
         String input = holder.etJumlahItem.getText().toString().trim();
+        
         if (input.isEmpty()) {
-            // Revert ke jumlah lama jika kosong
-            holder.etJumlahItem.setText(String.valueOf(daftarKeranjang.get(pos).getJumlah()));
+            holder.etJumlahItem.setText(String.valueOf(currentItem.getJumlah()));
             return;
         }
 
         try {
             int newQty = Integer.parseInt(input);
-            if (newQty > 0) {
-                listener.onUbahQtyManual(pos, newQty);
-            } else {
-                // Jika 0 atau negatif, hapus item
-                listener.onHapusItem(pos);
+            // HANYA update jika angka baru berbeda dengan angka lama
+            if (newQty != currentItem.getJumlah()) {
+                if (newQty > 0) {
+                    listener.onUbahQtyManual(pos, newQty);
+                } else {
+                    listener.onHapusItem(pos);
+                }
             }
         } catch (NumberFormatException e) {
-            holder.etJumlahItem.setText(String.valueOf(daftarKeranjang.get(pos).getJumlah()));
+            holder.etJumlahItem.setText(String.valueOf(currentItem.getJumlah()));
         }
     }
 
